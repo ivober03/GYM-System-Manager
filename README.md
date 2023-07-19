@@ -12,7 +12,7 @@ This is my final project for the CS50 introduction to computer science course. T
 
 ### Run Locally:
 
-    ## If it does not work try this:
+### If it does not work try this:
 
 ### Tech Used:
 
