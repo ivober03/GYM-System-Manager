@@ -1,0 +1,560 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Habit Traxker - Index
+{% endblock %}
+
+{% block main %}
+
+<hr class="thick-line-mobile">
+
+
+<div class="pagetitle">
+
+    <h1 style="margin-top:10px;">All Habits</h1>
+
+    <div class="d-flex align-items-center">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+          <li class="breadcrumb-item active">All Habits</li>
+        </ol>
+        <div class="" style="display: inline-block;">
+          <div style="display: inline-block;margin-bottom:24px;">
+            <div class="btn-group">
+              <button class="btn btn-primary dropdown-toggle ms-auto mr-2" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <i class="bi bi-plus-lg "></i>    Create Habit
+              </button>
+              <div class="dropdown-menu">
+                <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#createGoodHabitModal">Create Good Habit</button>
+                <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#breakBadHabitModal">Break Bad Habit</button>
+                <hr class="thick-line">
+                <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#createSectionModal">Create New Category</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr class="thick-line">  </div><!-- End Page Title -->
+
+
+  <section class="section dashboard">
+    <div class="row">
+
+<!-- Left side columns -->
+<div class="col-lg-8">
+  <div class="row">
+
+    <div class="accordion " id="sectionsAccordion">
+      {% for section in sections %}
+      <!-- Section Accordion -->
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="section{{ section['id'] }}">
+          <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ section['id'] }}" aria-expanded="true" aria-controls="collapse{{ section['id'] }}">
+            {{ section['title'] }}
+          </button>
+        </h2>
+        <div id="collapse{{ section['id'] }}" class="accordion-collapse collapse show" aria-labelledby="section{{ section['id'] }}" data-bs-parent="#sectionsAccordion">
+          <div class="accordion-body p-3">
+            <div class="row gy-3">
+              {% for habit in habits %}
+                {% if habit['section_id'] == section['id'] %}
+                  <!-- Habits Card -->
+                  <div class="{% if section['title'] == 'Negative habits' %}col-xxl-12 col-md-12 col-12 col-sm-12 {% else %}col-xxl-4 col-md-4 col-12 col-sm-6{% endif %}">
+                     <div class="card habits-card info-card position-relative">
+                      <div class="filter"></div>
+                      <div class="card-body">
+                        {% if section['title'] == 'Completed' or section['title'] == 'Failed' %}
+                            <h5 class="card-title habits-card-title text-decoration-line-through">{{ habit['name'] }} <span></span></h5>
+                            <div class="d-flex align-items-center">
+                              {% if habit['type'] != 'Bad' %}
+                                <p style="margin-bottom:0px;" class="text-decoration-line-through">{{ habit['current_value'] }}/{{ habit['value'] }}</p>
+                              {% endif %}
+                              <div class="dropdown ms-auto d-flex">
+                                <a class="icon" href="#" data-bs-toggle="dropdown">
+                                  <i class="bi bi-three-dots-vertical" s></i>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                                  <li>
+                                    {% if habit['type'] == 'Bad'%}
+                                    <a href="#" data-habit-id="{{ habit.id }}" data-bs-target="#badHabitProgressModal" class="dropdown-item display-progress-modal-bad">
+                                      <i class="bi bi-journal-text"></i> View Progress
+                                    </a>
+                                    {% else %}
+                                    <a href="#" data-habit-id="{{ habit.id }}" data-bs-target="#habitProgressModal" class="dropdown-item display-progress-modal">
+                                      <i class="bi bi-journal-text"></i> View Progress
+                                    </a>
+                                    {% endif %}
+                                  </li>
+                                  <li>
+                                    <form action="/delete_habit/{{ habit['id'] }}" method="POST">
+                                      <button type="submit" class="dropdown-item" onclick="return confirm('Are you sure you want to delete this habit? All progress and records will be erased.')">
+                                        <i class="bi bi-trash"></i> Delete</button>
+                                    </form>
+                                    <form action="/reset_habit/{{ habit['id'] }}" method="POST">
+                                      <button type="submit" class="dropdown-item" onclick="return confirm('When resetting the habit will reappear in its corresponding section to continue its periodic tracking. The purpose of resetting a habit is to keep tracking it, so we only recommend resetting it once the period is complete.')">
+                                        <i class="bi bi-arrow-counterclockwise"></i>Restart</button>
+                                    </form>
+                                  </li>
+                                </ul>
+                              </div>
+                            </div>
+                          </a>
+                        {% else %}
+                          {% if section['title'] == 'Negative habits' %}
+                              <h5 class="card-title habits-card-title">{{ habit['name'] }} <span></span></h5>
+                              <input type="hidden" id="habitStartDate" value="{{ habit['start_date'] }}">
+                              <div class="d-flex align-items-center">
+                                <input type="hidden" id="habitStartDate-{{ habit['id'] }}" value="{{ habit['start_date'] }}">
+                                <p style="margin-bottom:0px; font-size:12px;" class="" id="habit-time-{{ habit['id'] }}"></p>
+                                <div class="dropdown ms-auto d-flex">
+                                  <form action="/complete_habit/{{ habit['id'] }}" method="POST">
+                                    <button class="btn btn-light btn-sm btn-outline-dark ms-auto" type="submit">Succeed</button>
+                                  </form>
+                                  <a class="icon" href="#" data-bs-toggle="dropdown">
+                                    <i class="bi bi-three-dots-vertical"></i>
+                                  </a>
+                                  <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                                    <li>
+                                      <a href="#" data-habit-id="{{ habit.id }}" data-bs-target="#badHabitProgressModal" class="dropdown-item display-progress-modal-bad">
+                                        <i class="bi bi-journal-text"></i> View Progress</a>
+                                    </li>
+
+                                    <form action="/fail_habit/{{ habit['id'] }}" method="POST">
+                                      <li>
+                                        <button type="submit" class="dropdown-item" onclick="return confirm('Are you sure you want to fail this habit? You will lose all the progress you did in this period.')">
+                                          <i class="bi bi-x-lg"></i> Fail</button>
+                                      </li>
+                                    </form>
+                                    <li>
+                                      <form action="/delete_habit/{{ habit['id'] }}" method="POST">
+                                        <button type="submit" class="dropdown-item" onclick="return confirm('Are you sure you want to delete this habit? All progress and records will be erased.')">
+                                          <i class="bi bi-trash"></i> DeleteDelete</button>
+                                      </form>
+                                    </li>
+                                  </ul>
+                                </div>
+                              </div>
+                            </a>
+                          {% else %}
+                              <h5 class="card-title habits-card-title">{{ habit['name'] }} <span></span></h5>
+                              <div class="d-flex align-items-center">
+                                <p style="margin-bottom:0px;">{{ habit['current_value'] }}/{{ habit['value'] }} </p>
+                                <div class="dropdown ms-auto d-flex">
+                                  <form action="/increment_habit/{{ habit['id'] }}" method="POST">
+                                    <button class="btn btn-light btn-sm btn-outline-dark ms-auto" type="submit">Done</button>
+                                  </form>
+                                  <a class="icon" href="#" data-bs-toggle="dropdown">
+                                    <i class="bi bi-three-dots-vertical"></i>
+                                  </a>
+                                  <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                                    <li>
+                                      <a href="#" data-habit-id="{{ habit.id }}" data-bs-target="#habitProgressModal" class="dropdown-item display-progress-modal">
+                                        <i class="bi bi-journal-text"></i> View Progress
+                                      </a>
+                                    </li>
+                                    <li>
+                                      <button class="dropdown-item edit-habit-btn" data-habit-id="{{ habit.id }}">
+                                        <i class="bi bi-pencil"></i> Edit
+                                      </button>
+                                    </li>
+                                    <li>
+                                      <form action="/fail_habit/{{ habit['id'] }}" method="POST">
+                                        <button type="submit" class="dropdown-item" onclick="return confirm('Are you sure you want to fail this habit? You will lose all the progress')">
+                                          <i class="bi bi-x-lg"></i> Fail
+                                        </button>
+                                      </form>
+                                    </li>
+                                    <li>
+                                      <form action="/delete_habit/{{ habit['id'] }}" method="POST">
+                                        <button type="submit" class="dropdown-item" onclick="return confirm('Are you sure you want to delete this habit? All progress and records will be erased.')">
+                                          <i class="bi bi-trash"></i> Delete
+                                        </button>
+                                      </form>
+                                    </li>
+                                  </ul>
+                                </div>
+                              </div>
+                            </a>
+                          {% endif %}
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div><!-- End Habits Card -->
+                {% endif %}
+              {% endfor %}
+            </div><!-- End Row -->
+          </div>
+        </div>
+      </div><!-- End Section Accordion -->
+    {% endfor %}
+    </div><!-- End Accordion -->
+
+  </div><!-- End row -->
+</div><!-- End Left side columns -->
+
+
+      <!-- Right side columns -->
+      <div class="col-lg-4">
+
+        <!-- Recent Activity -->
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">TODO list <span>| Today</span></h5>
+
+            <div class="activity">
+              {% for habit in habits %}
+                {% if habit['type'] == 'Good' %}
+                <div class="activity-item d-flex">
+                  <div class="timeLeft">{{ habit['show_at']}}</div>
+                    <i class='bi bi-circle-fill activity-badge text-primary align-self-start'></i>
+                    <div class="activity-content d-flex justify-content-between">
+                        {% if habit['section_title'] == 'Completed' %}
+                        <p class="text-decoration-line-through">{{ habit['notes'] }}  ({{ habit['current_value'] }}/{{ habit['value'] }})</p>
+                        {% else %}
+                        <p class="">{{ habit['notes'] }}   ({{ habit['current_value'] }}/{{ habit['value'] }})</p>
+                        {% endif %}
+                    <div>
+                    </div>
+                  </div>
+
+                  </div><!-- End activity item-->
+                  {% endif %}
+                  {% endfor %}
+                </div>
+              </div>
+            </div><!-- End Recent Activity -->
+          </div><!-- End Right side columns -->
+
+        </div>
+      </section>
+
+<!-- Create Good Habit Modal -->
+  <div class="modal fade" id="createGoodHabitModal" tabindex="-1" aria-labelledby="createHabitModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-md">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="createHabitModalLabel">Create Habit</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form action="/create_good_habit" method="post">
+            <div class="mb-3">
+              <label for="habitName" class="form-label">Name</label>
+              <div class="input-group">
+                <input type="text" class="form-control" name="habitName" id="habitName" placeholder="Enter habit name">
+                <div class="dropdown">
+                </div>
+              </div>
+            </div>
+            <div class="mb-3 row">
+              <div class="col-6 col-md-3 col-lg-3">
+                <label for="habitValue" class="form-label">Goal:</label>
+                <input type="number" class="form-control" style="font-size:14px;" id="habitValue" name="habitValue" placeholder="Enter value" min="1" value="1">
+              </div>
+              <div class="col-6 col-md-3 col-lg-3" style="margin-bottom:16px;">
+                <label for="habitDuration"  class="form-label">‎ </label>
+                <select class="form-select" id="habitDuration" name="habitDuration">
+                  <option value="times">Times</option>
+                  <option value="minutes">Minutes</option>
+                  <option value="hours">Hours</option>
+                </select>
+              </div>
+              <div class="col-6 col-md-3 col-lg-3">
+                <label for="habitPeriod" class="form-label">‎ </label>
+                <select class="form-select" id="habitPeriod" name="habitPeriod">
+                  <option value="day">Per Day</option>
+                  <option value="week">Per Week</option>
+                  <option value="month">Per Month</option>
+                </select>
+              </div>
+              <div class="col-6 col-md-3 col-lg-3">
+                <label for="habitRepeatON" class="form-label">Repeat:</label>
+                <select class="form-select" id="habitRepeatON" name="habitRepeatON">
+                  <option value="daily">Daily</option>
+                </select>
+              </div>
+            </div>
+            <div class="mb-3 row">
+              <div class="col-12 col-md-6 col-lg-6" style="margin-bottom:16px;">
+                <label for="HabitTimeDay" class="form-label">Show At</label>
+                <input type="text" class="form-control" id="habitShowAt" name="habitShowAt" placeholder="Select Time">
+              </div>
+              <div class="col-12 col-md-6 col-lg-6">
+                <div class="form-group">
+                  <label for="datepicker" style="margin-bottom:8px;">Start Date</label>
+                  <div class="input-group">
+                    <input type="text" class="form-control" id="datepicker" readonly>
+                    <div class="input-group-append">
+                      <span class="input-group-text">
+                        <i class="bi bi-calendar"></i>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="habitNotes" class="form-label">Notes</label>
+              <textarea class="form-control" id="habitNotes" name="habitNotes" placeholder="Notes will appear in the TODO list section."></textarea>
+            </div>
+            <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">Create</button>
+          </form>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- Edit Good Habit Modal -->
+<div class="modal fade" id="editGoodHabitModal" tabindex="-1" aria-labelledby="editHabitModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-md">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editGoodHabitModalLabel">Edit Habit</h5>
+        <button type="button" class="btn-close ms-0" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="editGoodHabitForm" method="post">
+          <div class="mb-3">
+            <label for="edithabitName" class="form-label">Name</label>
+            <div class="input-group">
+              <input type="text" class="form-control" name="editHabitName" id="editHabitName" placeholder="" value="">
+              <div class="dropdown">
+              </div>
+            </div>
+          </div>
+          <div class="mb-3 row">
+            <div class="col-6 col-md-3 col-lg-3">
+              <label for="editHabitValue" class="form-label">Goal:</label>
+              <input type="number" style="font-size:14px;" class="form-control" id="editHabitValue" name="editHabitValue" placeholder="" min="1" value="">
+            </div>
+            <div class="col-6 col-md-3 col-lg-3" style="margin-bottom:16px;">
+              <label for="editHabitDuration" class="form-label">‎ </label>
+              <select class="form-select" id="editHabitDuration" name="editHabitDuration">
+                <option value="times">Times</option>
+                <option value="minutes">Minutes</option>
+                <option value="hours">Hours</option>
+              </select>
+            </div>
+            <div class="col-6 col-md-3 col-lg-3">
+              <label for="editHabitPeriod" class="form-label">‎ </label>
+              <select class="form-select" id="editHabitPeriod" name="editHabitPeriod">
+                <option value="day">Per Day</option>
+
+              </select>
+            </div>
+            <div class="col-6 col-md-3 col-lg-3">
+              <label for="editHabitRepeatON" class="form-label">Repeat On:</label>
+              <select class="form-select" id="editHabitRepeatON" name="editHabitRepeatON">
+                <option value="daily">Daily</option>
+
+              </select>
+            </div>
+          </div>
+          <div class="mb-3 row">
+            <div class="col-12 col-md-12 col-lg-12" style="margin-bottom:16px;">
+              <label for="editHabitShowAt" class="form-label">Show At</label>
+              <input type="text" class="form-control" id="editHabitShowAt" name="editHabitShowAt">
+            </div>
+          <div class="mb-3">
+            <label for="editHabitNotes" class="form-label">Notes</label>
+            <textarea class="form-control" id="editHabitNotes" name="editHabitNotes" placeholder=""></textarea>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary" style="font-size:16px;">Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+
+<!-- Create Break Habit Modal -->
+<div class="modal fade" id="breakBadHabitModal" tabindex="-1" aria-labelledby="createHabitModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-md">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="createHabitModalLabel">Break Habit</h5>
+        <div class="btn-group" style="  margin-left: auto;        ">
+          <button type="button" class="btn btn-light btn-sm btn-outline-dark" data-habit-type="quit">Quit</button>
+          <button type="button" class="btn btn-light btn-sm btn-outline-dark" data-habit-type="limit">Limit</button>
+        </div>
+        <button type="button" class="btn-close ms-0" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="/break_bad_habit" method="post">
+          <input type="hidden" id="habitTypeInput" value="" name="habit_type"> <!-- hiden input to store the quit/limit button value -->
+          <div class="mb-3">
+            <label for="badHabitName" class="form-label">Name</label>
+            <div class="input-group">
+              <input type="text" class="form-control" name="badHabitName" id="badHabitName" placeholder="Enter habit name">
+              <div class="dropdown">
+              </div>
+            </div>
+          </div>
+          <div class="mb-3 row" id="limitSection">
+            <div class="col">
+              <label for="badHabitValue" class="form-label">Goal:</label>
+              <input type="number" style="font-size:14px;" class="form-control" name="badHabitValue" id="badHabitValue" placeholder="Enter value" min="1" value="1">
+            </div>
+            <div class="col">
+              <label for="badHabitDuration" class="form-label">&nbsp</label>
+              <select class="form-select" name="badHabitDuration" id="badHabitDuration">
+                <option value="times">Times</option>
+                <option value="minutes">Minutes</option>
+                <option value="hours">Hours</option>
+              </select>
+            </div>
+            <div class="col">
+              <label for="badHabitPeriod" class="form-label">&nbsp</label>
+              <select class="form-select" name="badHabitPeriod" id="badHabitPeriod">
+                <option value="day">Per Day</option>
+                <option value="week">Per Week</option>
+                <option value="month">Per Month</option>
+              </select>
+            </div>
+            <div class="mt-3 row">
+            <label for="datepickerBreak">Start Date</label>
+              <div class="input-group m-auto">
+                <input type="text" class="form-control" name="datepickerBreak" id="datepickerBreak" readonly>
+                <div class="input-group-append">
+                  <span class="input-group-text">
+                    <i class="bi bi-calendar"></i>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="mb-3 row" id="quitSection">
+            <div class="modal-body">
+              <div class="form-group">
+                <label for="datepickerBreak2">Start Date</label>
+                <div class="input-group">
+                  <input type="text" class="form-control" name="datepickerBreak2" id="datepickerBreak2" readonly>
+                  <div class="input-group-append">
+                    <span class="input-group-text">
+                      <i class="bi bi-calendar"></i>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Create</button>
+        </form>
+          </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Create Section Modal -->
+<div class="modal fade" id="createSectionModal" tabindex="-1" aria-labelledby="createSectionModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-md">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="createSectionModalLabel">Create Section</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="/create_section" method="post">
+          <div class="mb-3">
+            <label for="sectionTitle" class="form-label">Title</label>
+            <input type="text" class="form-control" name="sectionTitle" id="sectionTitle" placeholder="Enter section title">
+          </div>
+          <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Create</button>
+        </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Good Habit Progress Modal -->
+<div class="modal fade" id="habitProgressModal" tabindex="-1" aria-labelledby="habitProgressModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable ">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="habitProgressModalLabel"></h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-fire"></i> Current Streak</h5>
+                <p class="card-text fs-5" id="currentStreak"></p>
+              </div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-check-lg"></i> Completed</h5>
+                <p class="card-text fs-5" id="completedDays"></p>
+              </div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-x-lg"></i> Failed</h5>
+                <p class="card-text fs-5" id="failedDays"></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <a href="#" id="viewRecordsBtn" class="btn btn-primary view-records-btn">View Records</a>
+    </div>
+  </div>
+</div>
+</div>
+
+
+<!-- Bad Habit Progress Modal -->
+<div class="modal fade" id="badHabitProgressModal" tabindex="-1" aria-labelledby="habitProgressModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable ">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="badHabitProgressModalLabel"></h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-fire"></i> Current Streak</h5>
+                <p class="card-text fs-5" id="badCurrentStreak"></p>
+              </div>
+            </div>
+          </div>
+          <div class="col-12">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-x-lg"></i> Failed</h5>
+                <p class="card-text fs-5" id="badFailedDays"></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <a href="#" id="viewRecordsBtnBad"class="btn btn-primary view-records-btn">View Records</a>
+      </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{% endblock %}

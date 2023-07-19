@@ -1,0 +1,70 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Habit Traxker - Index
+{% endblock %}
+
+{% block main %}
+<div class="pagetitle">
+
+    <h1 style="margin-top:10px; margin-bottom:10px;">Records</h1>
+
+    <div class="d-flex align-items-center">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+          <li class="breadcrumb-item active">Records</li>
+        </ol>
+    </div>
+</div>
+
+<section class="section">
+  <div class="row">
+    <div class="col-lg-12">
+
+      <div class="card">
+        <div class="card-body">
+        <br>
+
+          <form action="{{ url_for('records') }}" method="GET" class="mb-3">
+            <div class="input-group">
+              <input type="text" name="query" class="form-control" placeholder="Buscar hábito por nombre" value="{{ query }}">
+              <button type="submit" class="btn btn-primary">Buscar</button>
+            </div>
+          </form>
+
+          <table class="table rounded table-light">
+            <thead>
+              <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Type</th>
+                <th scope="col">State</th>
+                <th scope="col">Streak</th>
+                <th scope="col">Date</th>
+              </tr>
+            </thead>
+            <tbody style="rounded">
+              {% for record in records %}
+              <tr class="{% if record.state == 'Completed' %}table-success{% elif record.state == 'Failed' %}table-danger{% elif record.state == 'Created' %}table-primary {% else%} table-secondary {% endif %}">
+                <td>{{ record.name }}</td>
+                <td>{{ record.type }}</td>
+                <td>{{ record.state }}</td>
+                {% if record.type == 'Bad' %}
+                <td>-</td>
+                {% else %}
+                <td>{{ record.streak }}</td>
+                {% endif %}
+                <td>{{ record.date }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+
+
+          <!-- End Table with stripped rows -->
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
