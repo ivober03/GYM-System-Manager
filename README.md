@@ -167,5 +167,14 @@ To run the web application locally, follow these steps:
     
 ## Credits:
 
+I would like to acknowledge the following resources that contributed to the development of this web application:
+
+  - BoostrapMade: The "NiceAdmin" template from BootstrapMade served as the basis for the web application's user interface. Its responsive design and features greatly              facilitated the development process.
+  
+  - Pikaday: The Pikaday library provided the date picker functionality used in the web application, allowing users to easily select dates.
+
+  - Flatpickr: The Flatpickr library was used to implement the time picker feature, enabling users to choose specific times with ease.
+
+  - CS50x 2023: Special thanks to CS50x 2023 for providing a comprehensive course that inspired and enhanced this project.
 
 
