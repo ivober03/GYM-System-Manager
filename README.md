@@ -60,7 +60,7 @@ This web application aims to help users develop and maintain healthy habits by p
 
   
   8. **Records Page:**
-      - Users can view a records page that shows their historical habit data, allowing them to analyze their long-term progress. This page can show the individual progress of a         particular habit or the records of all habits since the user was created.
+      - Users can view a records page that shows their historical habit data, allowing them to analyze their long-term progress. This page can show the individual progress of          a particular habit or the records of all habits since the user was created.
      
         ![individual-records](https://github.com/ivober03/CS50x-final-project/assets/125988184/619fae8c-9ef9-4838-8306-a0c417d4b0fe)
         Records page for a particular habit.
@@ -112,7 +112,50 @@ This web application aims to help users develop and maintain healthy habits by p
 
 ## Run Locally:
 
-### If it does not work try this:
+To run the web application locally, follow these steps: 
+
+  1. Clone the repository to your local machine using the following command:
+
+      ```console
+      git clone https://github.com/ivober03/CS50x-final-project.git
+      ```
+
+  2. Navigate to the project directory:
+     
+      ```console
+      cd CS50x-final-project
+      ```
+
+  3. Create a virtual environment to isolate the application's dependencies:
+
+     ```console
+      python3 -m venv venv
+      ```
+
+  4. Activate the virtual enviroment:
+
+     - On windows: 
+
+       ```console
+       venv\Scripts\activate
+       ```
+     - On macOS and Linux:
+
+       ```console
+       source venv/bin/activate
+       ```
+
+  5. Install the required dependencies from the requirements.txt file:
+
+       ```console
+       pip install -r requirements.txt
+       ```
+
+  6. Run the web application using the following command:
+   
+       ```console
+       flask run
+       ``` 
 
 ## Tech Used:
 
