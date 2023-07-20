@@ -163,7 +163,8 @@ To run the web application locally, follow these steps:
   - Flask-SQLAlchemy.
   - HTML, CSS and JavaScript.
   - Jinja2 Templating Engine.
-  - Boostrap
+  - SQLite.
+  - Boostrap.
     
 ## Credits:
 
