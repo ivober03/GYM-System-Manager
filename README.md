@@ -169,7 +169,7 @@ To run the web application locally, follow these steps:
 
 I would like to acknowledge the following resources that contributed to the development of this web application:
 
-  - BoostrapMade: The "NiceAdmin" template from BootstrapMade served as the basis for the web application's user interface. Its responsive design and features greatly              facilitated the development process.
+  - BoostrapMade: The "NiceAdmin" template from BootstrapMade served as the basis for the web application's user interface. Its responsive design and features greatly              facilitated the frontend development process.
   
   - Pikaday: The Pikaday library provided the date picker functionality used in the web application, allowing users to easily select dates.
 
