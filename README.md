@@ -60,17 +60,18 @@ This web application aims to help users develop and maintain healthy habits by p
 
   
   8. **Records Page:**
-      -Users can view a records page that shows their historical habit data, allowing them to analyze their long-term progress. This page can show the individual progress of a         particular habit or the records of all habits since the user was created.
+      - Users can view a records page that shows their historical habit data, allowing them to analyze their long-term progress. This page can show the individual progress of a         particular habit or the records of all habits since the user was created.
      
-      ![individual-records](https://github.com/ivober03/CS50x-final-project/assets/125988184/619fae8c-9ef9-4838-8306-a0c417d4b0fe)
-      Records page for a particular habit.
+        ![individual-records](https://github.com/ivober03/CS50x-final-project/assets/125988184/619fae8c-9ef9-4838-8306-a0c417d4b0fe)
+        Records page for a particular habit.
       
-      ![records](https://github.com/ivober03/CS50x-final-project/assets/125988184/68d0d005-a026-4c6a-983f-32235f941ec2)
-      Records page for all habits.
+        ![records](https://github.com/ivober03/CS50x-final-project/assets/125988184/68d0d005-a026-4c6a-983f-32235f941ec2)
+        Records page for all habits.
 
         
   9. **Mobile Responsive:**
       - The web application is designed to be responsive and adapt to different screen sizes, providing an optimal experience on all devices. Here are some examples:
+        
         ![index-mobile](https://github.com/ivober03/CS50x-final-project/assets/125988184/37356cc7-744d-404d-8503-5c98b275acaa)
         Dashboard page.
         
@@ -84,8 +85,30 @@ This web application aims to help users develop and maintain healthy habits by p
         Progress Modal
 
   
-  
 ## Database:
+  - The application utilizes a relational database to manage user information, habits, sections, and habit records. Bellow are the details of the tables used in the database       schema
+    
+    ![database-tables](https://github.com/ivober03/CS50x-final-project/assets/125988184/1fb55281-6533-4089-bfa7-41d644032f79)
+
+    ### Users:
+    
+    The core of the database is the users table, which stores essential information about each registered user. This table includes details such as the user's name,                chosen username, email address, and a secure password hash for authentication.
+
+
+    ### Habits and Sections:
+    
+    To organize habits effectively, the application uses two additional tables: habits and sections. The habits table holds information about individual habits, including          their names, values, durations, and repetition frequencies. It also contains details about when and how each habit should be displayed to the user. Additionally, users         can group their habits using the sections table, where each section is defined by a unique title.
+
+
+    ### Records:
+    
+    The records table serves as a crucial component in tracking users' progress with their habits. Each record represents an instance of a user performing a specific habit at      a particular date and time. The table includes data such as the habit's state (completed or in progress), the current streak of the habit, and a timestamp indicating when      the record was created.
+
+
+    ### Relationships:
+
+    The database schema establishes relationships between tables to create a comprehensive and interconnected data model. For instance, the habits and sections tables              reference the users table, enabling each habit and section to be associated with a specific user. The records table, on the other hand, refers to both the habits and           users tables, linking each record to a particular habit and user.
+   
 
 ## Run Locally:
 
