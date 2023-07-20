@@ -126,7 +126,7 @@ To run the web application locally, follow these steps:
       cd CS50x-final-project
       ```
 
-  3. Create a virtual environment to isolate the application's dependencies:
+  3. Create a virtual environment to isolate the application's dependencies(optional but recommended):
 
      ```console
       python3 -m venv venv
@@ -159,6 +159,13 @@ To run the web application locally, follow these steps:
 
 ## Tech Used:
 
+  - Python (Flask).
+  - Flask-SQLAlchemy.
+  - HTML, CSS and JavaScript.
+  - Jinja2 Templating Engine.
+  - Boostrap
+    
 ## Credits:
+
 
 
