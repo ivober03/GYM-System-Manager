@@ -6,7 +6,7 @@ This is my final project for the CS50x 2023 course. The main objective of this w
 
 This web application aims to help users develop and maintain healthy habits by providing a user-friendly interface to manage their habits. Users can sign up for a new account, or if they already have one, they can log in to access their personalized dashboard. On the dashboard, users can easily add new habits they want to adopt or remove from their daily routine.
 
-### Walkthrough video: 
+### Walkthrough video: https://www.youtube.com/watch?v=67xKmLR-CQU
 
 ## Features:
 
