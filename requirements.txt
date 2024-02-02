@@ -5,3 +5,4 @@ flask-session==0.4.0
 jinja2==3.0.1
 Flask-SQLAlchemy
 requests==2.27.1
+Werkzeug==2.2.2
