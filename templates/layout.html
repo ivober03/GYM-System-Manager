@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-  <title>Habit Traxker: {% block title %}{% endblock %}</title>
+  <title>Gym Managment: {% block title %}{% endblock %}</title>
   <meta content="" name="description">
   <meta content="" name="keywords">
 
@@ -43,9 +43,7 @@
     <!-- ======= Header ======= -->
     <header id="header" class="header fixed-top d-flex align-items-center">
       <div class="d-flex align-items-center justify-content-between">
-        <a href="index.html" class="logo d-flex align-items-center">
-          <span class="d-none d-lg-block">HabitTraxker</span>
-        </a>
+        <a></a>
         <i class="bi bi-list toggle-sidebar-btn"></i>
       </div><!-- End Logo -->
 
@@ -55,38 +53,12 @@
 
           <li class="nav-item dropdown">
 
-            <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
-              <i class="bi bi-bell"></i>
-              <span class="badge bg-primary badge-number">4</span>
-            </a><!-- End Notification Icon -->
-
-            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
-              <li class="dropdown-header">
-                You have new notifications
-                <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
-              </li>
-              <li>
-                <hr class="dropdown-divider">
-              </li>
-
-              <li class="notification-item">
-                <i class="bi bi-exclamation-circle text-warning"></i>
-                <div>
-                  <h4>Lorem Ipsum</h4>
-                  <p>Quae dolorem earum veritatis oditseno</p>
-                  <p>30 min. ago</p>
-                </div>
-              </li>
-
-            </ul><!-- End Notification Dropdown Items -->
-
-          </li><!-- End Notification Nav -->
 
 
           <li class="nav-item dropdown pe-3">
 
             <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-              <img src="/static/img/profile-img.jpg" alt="Profile" class="rounded-circle">
+
               <span class="d-none d-md-block dropdown-toggle ps-2">
                 {% if users %}
                   {{ users[0]['name'] }}
@@ -99,7 +71,7 @@
                 <h6>
                   {% if users %}
 
-                    {{ users[0]['username'] }}
+                    {{ users[0]['email'] }}
                   {% endif %}
                 </h6>
               </li>
@@ -109,7 +81,7 @@
               <li>
                 <a class="dropdown-item d-flex align-items-center" href="{{ url_for('logout') }}">
                     <i class="bi bi-box-arrow-right"></i>
-                    <span>Sign Out</span>
+                    <span>Salir</span>
                 </a>
               </li>
 
@@ -126,32 +98,40 @@
 
     <ul class="sidebar-nav" id="sidebar-nav">
 
-      <li class="nav-heading">Habits</li>
-
       <li class="nav-item">
         <a class="nav-link collapsed" href="index.html">
           <i class="bi bi-grid"></i>
-          <span>All Habits</span>
+          <span>Dashboard</span>
         </a>
       </li><!-- End Dashboard Nav -->
 
-      <li class="nav-heading">Areas</li>
-
       <li class="nav-item">
-        <a class="nav-link collapsed" href="">
-          <i class="bi bi-plus-lg  "></i>
-          <span>New Area</span>
-        </a>
-      </li><!-- End Profile Page Nav -->
-
-      <li class="nav-heading">Records</li>
-
-      <li class="nav-item">
-        <a class="nav-link collapsed" href="/records">
+        <a class="nav-link collapsed" href="/membersips">
           <i class="bi bi-journal-text"></i>
-          <span>History</span>
+          <span>Membresias</span>
         </a>
-      </li><!-- End Profile Page Nav -->
+      </li><!-- End Membership Page Nav -->
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="/payments">
+          <i class="bi bi-journal-text"></i>
+          <span>Pagos</span>
+        </a>
+      </li><!-- End Pays Page Nav -->
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="/routines">
+          <i class="bi bi-journal-text"></i>
+          <span>Rutinas</span>
+        </a>
+      </li><!-- End Routines Page Nav -->
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="/plans">
+          <i class="bi bi-journal-text"></i>
+          <span>Planes</span>
+        </a>
+      </li><!-- End Plans Page Nav -->
 
     </ul>
 
@@ -172,7 +152,7 @@
       <!-- You can delete the links only if you purchased the pro version. -->
       <!-- Licensing information: https://bootstrapmade.com/license/ -->
       <!-- Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/ -->
-      Modified and customized by <span><a href="https://github.com/ivober03">Ivo Bermudez</a>.</span>
+      Modified and customized by <span><a href="https://github.com/ivober03">Ivo Bermudez</a></span> & <span><a href="https://github.com/6upernova">Noah Kuperman</a>.</span>
     </div>
   </footer><!-- End Footer -->
 
