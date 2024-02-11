@@ -16,6 +16,7 @@ app.secret_key = 'a1b2c3d4e5f6g7h8i9j0'
 # Configure CS50 Library to use SQLite database
 db = SQL("sqlite:///manager.db")
 
+
 @app.route('/')
 def home():
     # check if the user is loged in
@@ -25,10 +26,9 @@ def home():
         return render_template('login.html')
 
 
-@app.route("/index.html")
+@app.route("/index")
 def index():
     """Load index page"""
-
 
     # select habits, users, and sections data
     #habits = db.execute(
@@ -49,6 +49,13 @@ def index():
 
 
     return render_template("index.html", users=users)
+
+
+@app.route('/plans', methods=['GET'])
+def plans():
+    """Show plans"""
+
+    return render_template("plans.html")
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -98,6 +105,7 @@ def logout():
     # Redirect the user to the login page
     return redirect(url_for('login'))
 
+
 @app.route('/check_email', methods=['POST'])
 def check_email():
     """check if the email is in the database"""
@@ -107,6 +115,7 @@ def check_email():
     rows = db.execute("SELECT * FROM users WHERE email = :email", email=email)
 
     return json.dumps({ 'exists': len(rows) > 0 })
+
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
