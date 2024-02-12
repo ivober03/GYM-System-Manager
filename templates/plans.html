@@ -15,29 +15,87 @@
       <div class="" style="display: inline-block;">
         <div style="display: inline-block;margin-bottom:10px;margin-top:14px;">
           <div class="btn-group">
-            <button class="btn btn-primary dropdown-toggle ms-auto mr-2" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <i class="bi bi-plus-lg "></i>    Create Habit
+            <button class="btn btn-primary ms-auto mr-2" type="button" style="white-space: nowrap;"  aria-haspopup="true" aria-expanded="false" data-bs-toggle="modal" data-bs-target="#createNewPlanModal">
+            <i class="bi bi-plus-lg "></i>   Crear Plan
             </button>
+
+            <!-- Provisory modal conections
             <div class="dropdown-menu">
               <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#createGoodHabitModal">Create Good Habit</button>
               <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#breakBadHabitModal">Break Bad Habit</button>
               <hr class="thick-line">
               <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#createSectionModal">Create New Category</button>
             </div>
+             -->
+
           </div>
         </div>
       </div>
-    </div>    
+    </div>
+  </div>
+    
+    
 <section class="section dashboard">
+
+  <div class="col-lg-12">
+    <!-- Start row -->
     <div class="row">
 
-<div class="col-lg-12">
-  <!-- Start row -->
-  <div class="row">
 
 
+    </div>
+  </div>
+</section>
 
-  </div><!-- Start row -->
+<!-- Create plan modal section-->
+<div class="modal fade" id="createNewPlanModal" tabindex="-1" aria-labelledby="createNewPlanModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-md">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="createNewPlanModalLabel">Crear Plan</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!--Poner accion en app.py-->
+        <form action="           " method="post" >
+          <!--Name label-->
+          <div class="mb-3">
+            <label for="habitName" class="form-label">Nombre</label>
+            <div class="input-group">
+              <input type="text" class="form-control" name="planName" id="planName" placeholder="Ingrese el nombre del plan">
+              <div class="dropdown">
+              </div>
+            </div>
+          </div>
+          <!--Price label-->
+          <div class="mb-3 row">
+            <div class="col-6">
+              <label for="planPrice" class="form-label">Precio:</label>
+              <div class="input-group">
+                <span class="input-group-text">$</span>
+                <input type="number" class="form-control"  id="PlanPrice" name="PlanPrice" placeholder="Ingrese Precio" min="1" value="1">
+              </div>
+            </div>
+            <!--Days label-->
+              <div class="col-6">
+                <label for="Dias" class="form-label">Dias:</label>
+                <input type="number" class="form-control"  id="DiasALaSemana" name="DiasALaSemana" placeholder="Ingrese Dias" min="1" value="1">
+              </div>
+            </div>
+          
+          <!--Description label-->
+            <div class="mb-3">
+              <label for="planDescription" class="form-label">Descripcion</label>
+              <textarea class="form-control" id="habitNotes" name="habitNotes" placeholder="Ingrese una Descripcion"></textarea>
+            </div>
+            <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">Create</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+
 
 {% endblock %}
