@@ -51,32 +51,33 @@ def index():
     return render_template("index.html", users=users)
 
 
-@app.route('/plans', methods=['GET' ])
+@app.route('/plans', methods=['GET'])
 def plans():
     """Show plans"""
 
-    users = db.execute("SELECT * FROM users WHERE id = :id", id=session["user_id"])
-    return render_template("plans.html", users=users)
+    # Select plans and user data
+
+    plans = db.execute("SELECT * FROM plans WHERE user_id = :id", id=session["user_id"])
+    user = db.execute("SELECT * FROM users WHERE id = :user_id", user_id=session["user_id"])
+    
+    return render_template("plans.html", user=user, plans=plans)
+
 
 @app.route('/create_new_plan', methods=['POST'])
 def create_new_plan():
     """Create new plan """
 
     # Get form data
-    plans_name = request.form['planName']
-    plans_price = int(request.form['planPrice'])
-    plans_days = int(request.form['days'])
-    plans_description = request.form['planDescription']
-
-    
-    
-    
+    plan_name = request.form['planName']
+    plan_price = int(request.form['planPrice'])
+    plan_days = int(request.form['days'])
+    plan_description = request.form['planDescription']
 
     # Insertar datos del nuevo plan en la base de datos
-    db.execute("INSERT INTO plans (name, days, price, description) "
-               "VALUES (:plans_name, :plans_days, :plans_price,  :plans_description)",
-                plans_name=plans_name, plans_days=plans_days, plans_price=plans_price,
-                plans_description=plans_description)
+    db.execute("INSERT INTO plans (name, days, price, description, user_id) "
+               "VALUES (:plan_name, :plan_days, :plan_price,  :plan_description, :user_id)",
+                plan_name=plan_name, plan_days=plan_days, plan_price=plan_price,
+                plan_description=plan_description, user_id=session["user_id"])
 
     # Redirigir al usuario a la página de índice
     return redirect(url_for('plans'))
