@@ -57,10 +57,10 @@
       </div>
       <div class="modal-body">
         <!--Poner accion en app.py-->
-        <form action="           " method="post" >
+        <form action="/create_new_plan" method="post" >
           <!--Name label-->
           <div class="mb-3">
-            <label for="habitName" class="form-label">Nombre</label>
+            <label for="planName" class="form-label">Nombre</label>
             <div class="input-group">
               <input type="text" class="form-control" name="planName" id="planName" placeholder="Ingrese el nombre del plan">
               <div class="dropdown">
@@ -73,20 +73,20 @@
               <label for="planPrice" class="form-label">Precio:</label>
               <div class="input-group">
                 <span class="input-group-text">$</span>
-                <input type="number" class="form-control"  id="PlanPrice" name="PlanPrice" placeholder="Ingrese Precio" min="1" value="1">
+                <input type="number" class="form-control"  id="planPrice" name="planPrice" placeholder="Ingrese Precio" min="1" value="1">
               </div>
             </div>
             <!--Days label-->
               <div class="col-6">
-                <label for="Dias" class="form-label">Dias:</label>
-                <input type="number" class="form-control"  id="DiasALaSemana" name="DiasALaSemana" placeholder="Ingrese Dias" min="1" value="1">
+                <label for="days" class="form-label">Dias:</label>
+                <input type="number" class="form-control"  id="days" name="days" placeholder="Ingrese Dias" min="1" value="1">
               </div>
             </div>
           
           <!--Description label-->
             <div class="mb-3">
               <label for="planDescription" class="form-label">Descripcion</label>
-              <textarea class="form-control" id="habitNotes" name="habitNotes" placeholder="Ingrese una Descripcion"></textarea>
+              <textarea class="form-control" id="planDescription" name="planDescription" placeholder="Ingrese una Descripcion"></textarea>
             </div>
             <div class="modal-footer">
             <button type="submit" class="btn btn-primary">Create</button>

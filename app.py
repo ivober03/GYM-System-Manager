@@ -51,12 +51,35 @@ def index():
     return render_template("index.html", users=users)
 
 
-@app.route('/plans', methods=['GET'])
+@app.route('/plans', methods=['GET' ])
 def plans():
     """Show plans"""
 
     users = db.execute("SELECT * FROM users WHERE id = :id", id=session["user_id"])
     return render_template("plans.html", users=users)
+
+@app.route('/create_new_plan', methods=['POST'])
+def create_new_plan():
+    """Create new plan """
+
+    # Get form data
+    plans_name = request.form['planName']
+    plans_price = int(request.form['planPrice'])
+    plans_days = int(request.form['days'])
+    plans_description = request.form['planDescription']
+
+    
+    
+    
+
+    # Insertar datos del nuevo plan en la base de datos
+    db.execute("INSERT INTO plans (name, days, price, description) "
+               "VALUES (:plans_name, :plans_days, :plans_price,  :plans_description)",
+                plans_name=plans_name, plans_days=plans_days, plans_price=plans_price,
+                plans_description=plans_description)
+
+    # Redirigir al usuario a la página de índice
+    return redirect(url_for('plans'))
 
 
 @app.route('/login', methods=['GET', 'POST'])
