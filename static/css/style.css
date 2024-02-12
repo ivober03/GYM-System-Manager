@@ -1273,7 +1273,7 @@ h6 {
 .card {
   border: none;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
+  border-radius: 8px !important;
   overflow: hidden;
   background-color: #fff;
   transition: box-shadow 0.3s ease;
@@ -1285,6 +1285,7 @@ h6 {
 
 .habits-card-title {
   margin-bottom: 0;
+  font-size: 25px;
 }
 
 .filter .icon {
@@ -1363,3 +1364,4 @@ h6 {
   text-align: center;
 
 }
+
