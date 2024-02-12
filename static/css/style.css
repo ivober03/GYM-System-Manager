@@ -284,7 +284,7 @@ h6 {
 }
 
 .accordion-button:not(.collapsed) {
-  color: #012970;
+  color: #012970 !important;
   background-color: #f6f9ff;
 }
 
@@ -1173,7 +1173,7 @@ h6 {
 }
 
 .btn-primary {
-  background-color: #4a90e2;
+  background-color: #4a90e2 !important;
   color: #fff;
   border: none;
   border-radius: 8px;

@@ -55,7 +55,8 @@ def index():
 def plans():
     """Show plans"""
 
-    return render_template("plans.html")
+    users = db.execute("SELECT * FROM users WHERE id = :id", id=session["user_id"])
+    return render_template("plans.html", users=users)
 
 
 @app.route('/login', methods=['GET', 'POST'])
