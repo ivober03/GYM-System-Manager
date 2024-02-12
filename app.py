@@ -81,6 +81,13 @@ def create_new_plan():
     # Redirigir al usuario a la página de índice
     return redirect(url_for('plans'))
 
+@app.route('/memberships', methods=['GET' ])
+def memberships():
+    """Show memberships"""
+
+    users = db.execute("SELECT * FROM users WHERE id = :id", id=session["user_id"])
+    return render_template("memberships.html", users=users)
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

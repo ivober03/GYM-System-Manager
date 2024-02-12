@@ -1189,10 +1189,13 @@ h6 {
 
 .form-select {
   border: 1px solid #ccc;
-  border-radius: 3px;
+  border-radius: 6px;
   padding: 6px;
-  font-size: 14px;
+  font-size: 16px;
   cursor: pointer;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 #calendar {
