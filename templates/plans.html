@@ -46,7 +46,12 @@
                   </a>
                   <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                     <li><a class="dropdown-item" href="#"><i class="bi bi-pencil"></i> Editar</a></li>
-                    <li><a class="dropdown-item" href="#"><i class="bi bi-trash"></i> Borrar</a></li>
+                    <li>
+                      <form action="/delete_plan/{{ plan['id'] }}" method="POST">
+                        <button type="submit" class="dropdown-item" onclick="return confirm('Confirmar borrar plan:')">
+                          <i class="bi bi-trash"></i> Borrar</button>
+                      </form>
+                    </li>
                   </ul>
                 </div>
               </div>

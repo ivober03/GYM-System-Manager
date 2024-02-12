@@ -50,9 +50,9 @@
         <form action="/create_new_membership" method="post" >
           <!--Name label-->
           <div class="mb-3">
-            <label for="membersip_name" class="form-label">Nombre:</label>
+            <label for="membership_name" class="form-label">Nombre:</label>
             <div class="input-group">
-              <input type="text" class="form-control" name="membersipName" id="membersipName" placeholder="Ingrese el nombre del miembro">
+              <input type="text" class="form-control" name="membershipName" id="membershipName" placeholder="Ingrese el nombre del miembro">
               <div class="dropdown">
               </div>
             </div>
@@ -63,16 +63,15 @@
               <label for="membershipPlan" class="form-label">Plan:</label>
               <div class="input-group">
                 <select class="form-select" id="membershipPlan" name="membershipPlan">
-                  <!--Implementar for recorriendo la base de datos y agregando las opciones-->
-                  <option value="familiar">familiar</option>
-                  <option value="estudiante">estudiante</option>
-                  <option value="Señor de la noche">Señor de la noche</option>
+                  {% for plan in plans %}
+                  <option value="{{ plan['id'] }}">{{ plan['name'] }}</option>
+                  {% endfor %}
                 </select>
               </div>
             </div>
             <!--Rutine label-->
               <div class="col-6">
-                <label for="days" class="form-label">Rutina:</label>
+                <label for="membershipRoutine" class="form-label">Rutina:</label>
                 <select class="form-select" id="membershipRoutine" name="MembershipRoutine">
                   <!--Implementar for recorriendo la base de datos y agregando las opciones-->
                   <option value="sexo">Plexo solar</option>
@@ -100,8 +99,8 @@
 
             <!--payment label-->
             <div class="col-6">
-              <label for="days" class="form-label">Pago:</label>
-                <select class="form-select" id="membershipRoutine" name="MembershipRoutine">
+              <label for="membershipPayment" class="form-label">Pago:</label>
+                <select class="form-select" id="membershipPayment" name="membershipPayment">
                   <!--Implementar for recorriendo la base de datos y agregando las opciones-->
                   <option value="sexo">Efectivo</option>
                   <option value="tula">Transferencia</option>

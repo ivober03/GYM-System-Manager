@@ -63,6 +63,21 @@ def plans():
     return render_template("plans.html", user=user, plans=plans)
 
 
+@app.route('/delete_plan/<int:plan_id>', methods=['POST'])
+def delete_habit(plan_id):
+    """Delete plan"""
+
+    # get element ID
+    plan = db.execute("SELECT * FROM plans WHERE id = :plan_id", plan_id=plan_id)
+
+    if len(plan) == 1:
+        db.execute("DELETE FROM plans WHERE id = :plan_id", plan_id=plan_id)
+
+    # Redirect user to index page
+    return redirect(url_for('plans'))
+
+
+
 @app.route('/create_new_plan', methods=['POST'])
 def create_new_plan():
     """Create new plan """
@@ -73,6 +88,8 @@ def create_new_plan():
     plan_days = int(request.form['days'])
     plan_description = request.form['planDescription']
 
+    
+
     # Insertar datos del nuevo plan en la base de datos
     db.execute("INSERT INTO plans (name, days, price, description, user_id) "
                "VALUES (:plan_name, :plan_days, :plan_price,  :plan_description, :user_id)",
@@ -82,12 +99,34 @@ def create_new_plan():
     # Redirigir al usuario a la página de índice
     return redirect(url_for('plans'))
 
-@app.route('/memberships', methods=['GET' ])
+
+@app.route('/create_new_membership', methods=['POST'])
+def create_new_membership():
+    """Create new membership """
+
+    # Get form data
+    membership_name = request.form['membership_name']
+    membership_plan_id = int(request.form['membershipPlan'])
+    membership_routine_id = int(request.form['membershipRoutine'])
+    membership_payment = request.form['membershipPayment']
+    membership_description = request.form['planDescription']
+
+    # Save date and time
+    current_datetime = datetime.now()
+    formatted_datetime = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
+
+
+@app.route('/memberships', methods=['GET'])
 def memberships():
     """Show memberships"""
+    
+    user_id = session.get("user_id")
+    
+    plans = db.execute("SELECT * FROM plans WHERE user_id = :user_id", user_id=user_id)
+    users = db.execute("SELECT * FROM users WHERE id = :id", id=user_id)
 
-    users = db.execute("SELECT * FROM users WHERE id = :id", id=session["user_id"])
-    return render_template("memberships.html", users=users)
+    return render_template("memberships.html", users=users, plans=plans)
+
 
 
 @app.route('/login', methods=['GET', 'POST'])
