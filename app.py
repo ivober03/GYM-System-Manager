@@ -153,7 +153,7 @@ def memberships():
     plans = db.execute("SELECT * FROM plans WHERE user_id = :user_id", user_id=user_id)
     users = db.execute("SELECT * FROM users WHERE id = :id", id=user_id)
 
-    return render_template("memberships.html", users=users, plans=plans)
+    return render_template("memberships.html", users=users, plans=plans, routines=routines)
 
 
 @app.route('/routines', methods=['GET'])
