@@ -73,9 +73,9 @@
               <label for="days" class="form-label">Rutina:</label>
               <select class="form-select" id="membershiroutine" name="MembershipRoutine">
                   <!-- Implementar for recorriendo la base de datos y agregando las opciones -->
-                  <option value="sexo">Para fortalecer el plexo solar</option>
-                  <option value="tula">Fortalecimiento frontal de tula</option>
-                  <option value="Vurpis">Vurpis</option>
+                  {% for routine in routines %}
+                  <option value="{{ routine['id'] }}">{{ routine['name'] }}</option>
+                  {% endfor %}
               </select>
           </div>
           
