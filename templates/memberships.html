@@ -71,14 +71,13 @@
             <!--Rutine label-->
             <div class="col-6">
               <label for="days" class="form-label">Rutina:</label>
-              <select class="form-select" id="membershiroutine" name="MembershipRoutine">
+              <select class="form-select" id="membershiRoutine" name="membershipRoutine">
                   <!-- Implementar for recorriendo la base de datos y agregando las opciones -->
                   {% for routine in routines %}
                   <option value="{{ routine['id'] }}">{{ routine['name'] }}</option>
                   {% endfor %}
               </select>
           </div>
-          
           </div>
 
             <!--Email  label-->

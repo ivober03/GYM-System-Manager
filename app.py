@@ -140,7 +140,7 @@ def create_new_membership():
 
     
     # Return to memberships page
-    return redirect(url_for('plans'))
+    return redirect(url_for('memberships'))
 
 
 @app.route('/memberships', methods=['GET'])
