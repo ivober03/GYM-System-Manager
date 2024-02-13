@@ -44,7 +44,7 @@
         <h5 class="modal-title" id="createNewMembershipModalLabel">Agregar Nuevo Miembro</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      
+
       <div class="modal-body">
         <form action="/create_new_membership" method="post" >
           <!--Name label-->
@@ -69,6 +69,7 @@
               </div>
             </div>
             <!--Rutine label-->
+<<<<<<< HEAD
               <div class="col-6">
                 <label for="membershipRoutine" class="form-label">Rutina:</label>
                 <select class="form-select" id="membershipRoutine" name="membershipRoutine">
@@ -77,6 +78,18 @@
                   {% endfor %}
                 </select>
               </div>
+=======
+            <div class="col-6">
+              <label for="days" class="form-label">Rutina:</label>
+              <select class="form-select" id="membershiroutine" name="MembershipRoutine">
+                  <!-- Implementar for recorriendo la base de datos y agregando las opciones -->
+                  <option value="sexo">Para fortalecer el plexo solar</option>
+                  <option value="tula">Fortalecimiento frontal de tula</option>
+                  <option value="Vurpis">Vurpis</option>
+              </select>
+          </div>
+          
+>>>>>>> 9d67de815bb930d176600533adadd94da427d224
           </div>
 
             <!--Email  label-->
