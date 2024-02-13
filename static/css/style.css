@@ -63,7 +63,7 @@ h6 {
 }
 
 .pagetitle h1 {
-  font-size: 24px;
+  font-size: 32px;
   margin-bottom: 0;
   font-weight: 600;
   color: #012970;
@@ -228,12 +228,22 @@ h6 {
 }
 
 .card-title {
-  padding: 20px 0 15px 0;
-  font-size: 18px;
+  padding: 20px 0 12px 0;
+  font-size: 22px;
+  font-weight: 500;
+  margin-bottom: 1.25rem;
+  color: #012970;
+  font-family: "Poppins", sans-serif;
+}
+
+.card-title-2 {
+  padding: 5px 0 7px 0;
+  font-size: 22px;
   font-weight: 500;
   color: #012970;
   font-family: "Poppins", sans-serif;
 }
+
 
 @media (max-width: 767px) {
 
@@ -1458,10 +1468,6 @@ h2,
   font-size: 1.25rem;
 }
 
-h5,
-.h5 {
-  font-size: .8125rem;
-}
 
 .container-fluid {
   width: 100%;
@@ -1496,9 +1502,6 @@ h5,
   flex: 1 1 auto;
 }
 
-.card-title {
-  margin-bottom: 1.25rem;
-}
 
 @keyframes progress-bar-stripes {
   from {

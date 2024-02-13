@@ -15,18 +15,8 @@
         <div style="display: inline-block;margin-bottom:10px;margin-top:14px;">
           <div class="btn-group">
             <button class="btn btn-primary ms-auto mr-2" type="button" style="white-space: nowrap;"  aria-haspopup="true" aria-expanded="false" data-bs-toggle="modal" data-bs-target="#createNewMembershipModal">
-            <i class="bi bi-plus-lg "></i>   Crear Membresia
+            <i class="bi bi-plus-lg "></i>   Agregar Miembro
             </button>
-
-            <!-- Provisory modal conections
-            <div class="dropdown-menu">
-              <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#createGoodHabitModal">Create Good Habit</button>
-              <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#breakBadHabitModal">Break Bad Habit</button>
-              <hr class="thick-line">
-              <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#createSectionModal">Create New Category</button>
-            </div>
-             -->
-
           </div>
         </div>
       </div>
@@ -51,7 +41,7 @@
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-md">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="createNewMembershipModalLabel">Crear Membresia</h5>
+        <h5 class="modal-title" id="createNewMembershipModalLabel">Agregar Nuevo Miembro</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
@@ -60,9 +50,9 @@
         <form action="/create_new_membership" method="post" >
           <!--Name label-->
           <div class="mb-3">
-            <label for="membersip_name" class="form-label">Nombre</label>
+            <label for="membership_name" class="form-label">Nombre:</label>
             <div class="input-group">
-              <input type="text" class="form-control" name="membersipName" id="membersipName" placeholder="Ingrese el nombre del miembro">
+              <input type="text" class="form-control" name="membershipName" id="membershipName" placeholder="Ingrese el nombre del miembro">
               <div class="dropdown">
               </div>
             </div>
@@ -73,17 +63,16 @@
               <label for="membershipPlan" class="form-label">Plan:</label>
               <div class="input-group">
                 <select class="form-select" id="membershipPlan" name="membershipPlan">
-                  <!--Implementar for recorriendo la base de datos y agregando las opciones-->
-                  <option value="familiar">familiar</option>
-                  <option value="estudiante">estudiante</option>
-                  <option value="Señor de la noche">Señor de la noche</option>
+                  {% for plan in plans %}
+                  <option value="{{ plan['id'] }}">{{ plan['name'] }}</option>
+                  {% endfor %}
                 </select>
               </div>
             </div>
             <!--Rutine label-->
             <div class="col-6">
               <label for="days" class="form-label">Rutina:</label>
-              <select class="form-select" id="membershipRoutine" name="MembershipRoutine">
+              <select class="form-select" id="membershiroutine" name="MembershipRoutine">
                   <!-- Implementar for recorriendo la base de datos y agregando las opciones -->
                   <option value="sexo">Para fortalecer el plexo solar</option>
                   <option value="tula">Fortalecimiento frontal de tula</option>
@@ -97,7 +86,7 @@
             <div class="mb-3 row">
               <div class ="col-6">
               <div class="form-group">
-                <label for="datepicker" style="margin-bottom:8px;">Start Date</label>
+                <label for="datepicker" style="margin-bottom:8px;">Fecha:</label>
                 <div class="input-group">
                   <input type="text" class="form-control" id="datepicker" readonly>
                   <div class="input-group-append">
@@ -111,8 +100,8 @@
 
             <!--payment label-->
             <div class="col-6">
-              <label for="days" class="form-label">Pago:</label>
-                <select class="form-select" id="membershipRoutine" name="MembershipRoutine">
+              <label for="membershipPayment" class="form-label">Pago:</label>
+                <select class="form-select" id="membershipPayment" name="membershipPayment">
                   <!--Implementar for recorriendo la base de datos y agregando las opciones-->
                   <option value="sexo">Efectivo</option>
                   <option value="tula">Transferencia</option>
@@ -122,12 +111,12 @@
             </div>
             <!--Description label-->
             <div class="mb-3">
-              <label for="planDescription" class="form-label">Descripcion</label>
+              <label for="planDescription" class="form-label">Descripción:</label>
               <textarea class="form-control" id="planDescription" name="planDescription" placeholder="Ingrese una Descripcion"></textarea>
             </div>
           </div>
               <div class="modal-footer">
-              <button type="submit" class="btn btn-primary">Create</button>
+              <button type="submit" class="btn btn-primary">Crear</button>
               </div>
             </form>
       </div>
