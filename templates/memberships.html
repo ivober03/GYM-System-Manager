@@ -54,7 +54,7 @@
         <h5 class="modal-title" id="createNewMembershipModalLabel">Crear Membresia</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      
+
       <div class="modal-body">
         <!--Poner accion en app.py-->
         <form action="/create_new_membership" method="post" >
@@ -81,15 +81,16 @@
               </div>
             </div>
             <!--Rutine label-->
-              <div class="col-6">
-                <label for="days" class="form-label">Rutina:</label>
-                <select class="form-select" id="membershipRoutine" name="MembershipRoutine">
-                  <!--Implementar for recorriendo la base de datos y agregando las opciones-->
+            <div class="col-6">
+              <label for="days" class="form-label">Rutina:</label>
+              <select class="form-select" id="membershipRoutine" name="MembershipRoutine">
+                  <!-- Implementar for recorriendo la base de datos y agregando las opciones -->
                   <option value="sexo">Para fortalecer el plexo solar</option>
                   <option value="tula">Fortalecimiento frontal de tula</option>
                   <option value="Vurpis">Vurpis</option>
-                </select>
-              </div>
+              </select>
+          </div>
+          
           </div>
 
             <!--Time label-->
