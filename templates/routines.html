@@ -6,6 +6,24 @@
 
 {% block main %}
 
+<div class="pagetitle">
+
+
+
+  <div class="d-flex align-items-center ">
+  <h1 style="margin-top:10px; width:100%">Rutinas:</h1>
+      <div class="" style="display: inline-block;">
+        <div style="display: inline-block;margin-bottom:10px;margin-top:14px;">
+          <div class="btn-group">
+            <button class="btn btn-primary ms-auto mr-2" type="button" style="white-space: nowrap;"  aria-haspopup="true" aria-expanded="false" data-bs-toggle="modal" data-bs-target="#createNewPlanModal">
+            <i class="bi bi-plus-lg "></i>   Crear Rutina
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 <section class="section dashboard">
 
   <div class="col-lg-12">
@@ -18,6 +36,36 @@
   </div>
 </section>
 
-
+<!-- Create routine modal section-->
+<div class="modal fade" id="createNewPlanModal" tabindex="-1" aria-labelledby="createNewPlanModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-md">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="createNewPlanModalLabel">Crear Nueva Rutina</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!--Poner accion en app.py-->
+        <form action="/create_new_routine" method="post" >
+          <!--Name label-->
+          <div class="mb-3">
+            <label for="routineName" class="form-label">Nombre:</label>
+            <div class="input-group">
+              <input type="text" class="form-control" name="routineName" id="routineName" placeholder="Ingrese el nombre de la rutina">
+            </div>
+          </div>
+          <!--Description label-->
+            <div class="mb-3">
+              <label for="routineDescription" class="form-label">Descripción:</label>
+              <textarea class="form-control" id="routineDescription" name="routineDescription" placeholder="Ingrese una Descripcion"></textarea>
+            </div>
+            <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">Crear</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 {% endblock %}

@@ -10,7 +10,7 @@
 
 
   <div class="d-flex align-items-center ">
-  <h1 style="margin-top:10px; width:100%">Membresias</h1>
+  <h1 style="margin-top:10px; width:100%">Membresias:</h1>
       <div class="" style="display: inline-block;">
         <div style="display: inline-block;margin-bottom:10px;margin-top:14px;">
           <div class="btn-group">
@@ -46,7 +46,6 @@
       </div>
       
       <div class="modal-body">
-        <!--Poner accion en app.py-->
         <form action="/create_new_membership" method="post" >
           <!--Name label-->
           <div class="mb-3">
@@ -72,29 +71,19 @@
             <!--Rutine label-->
               <div class="col-6">
                 <label for="membershipRoutine" class="form-label">Rutina:</label>
-                <select class="form-select" id="membershipRoutine" name="MembershipRoutine">
-                  <!--Implementar for recorriendo la base de datos y agregando las opciones-->
-                  <option value="sexo">Plexo solar</option>
-                  <option value="tula">Tula frontal</option>
-                  <option value="Vurpis">Vurpis</option>
+                <select class="form-select" id="membershipRoutine" name="membershipRoutine">
+                  {% for routine in routines %}
+                  <option value="{{ routine['id'] }}">{{ routine['name'] }}</option>
+                  {% endfor %}
                 </select>
               </div>
           </div>
 
-            <!--Time label-->
+            <!--Email  label-->
             <div class="mb-3 row">
-              <div class ="col-6">
-              <div class="form-group">
-                <label for="datepicker" style="margin-bottom:8px;">Fecha:</label>
-                <div class="input-group">
-                  <input type="text" class="form-control" id="datepicker" readonly>
-                  <div class="input-group-append">
-                    <span class="input-group-text">
-                      <i class="bi bi-calendar"></i>
-                    </span>
-                  </div>
-                </div>
-              </div>
+              <div class="col-6">
+                <label for="membershipEmail" class="form-label">Email:</label>
+                <input type="membershipEmail" name="membershipEmail" class="form-control" id="membershipEmail" placeholder="Ingrese el Email">
               </div>
 
             <!--payment label-->
@@ -108,6 +97,7 @@
                 </select>
             </div>
             </div>
+
             <!--Description label-->
             <div class="mb-3">
               <label for="planDescription" class="form-label">Descripción:</label>

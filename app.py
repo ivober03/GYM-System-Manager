@@ -88,8 +88,6 @@ def create_new_plan():
     plan_days = int(request.form['days'])
     plan_description = request.form['planDescription']
 
-    
-
     # Insertar datos del nuevo plan en la base de datos
     db.execute("INSERT INTO plans (name, days, price, description, user_id) "
                "VALUES (:plan_name, :plan_days, :plan_price,  :plan_description, :user_id)",
@@ -100,20 +98,49 @@ def create_new_plan():
     return redirect(url_for('plans'))
 
 
+@app.route('/create_new_routine', methods=['POST'])
+def create_new_routine():
+    """Create new routine """
+
+    # Get form data
+    routine_name = request.form['routineName']
+    routine_description = request.form['routineDescription']
+    pdf_link = 'a'
+
+    # Upload data to database
+    db.execute("INSERT INTO routines (name, description, pdf_link, user_id) "
+            "VALUES (:routine_name, :routine_description, :pdf_link, :user_id)",
+            routine_name=routine_name, routine_description=routine_description, pdf_link=pdf_link, user_id=session["user_id"])
+
+    # Redirigir al usuario a la página de índice
+    return redirect(url_for('routines'))
+
+
 @app.route('/create_new_membership', methods=['POST'])
 def create_new_membership():
     """Create new membership """
 
     # Get form data
-    membership_name = request.form['membership_name']
-    membership_plan_id = int(request.form['membershipPlan'])
-    membership_routine_id = int(request.form['membershipRoutine'])
-    membership_payment = request.form['membershipPayment']
-    membership_description = request.form['planDescription']
-
+    m_name = request.form['membershipName']
+    m_plan_id = int(request.form['membershipPlan'])
+    m_routine_id = int(request.form['membershipRoutine'])
+    m_payment = request.form['membershipPayment'] # make function to store payment in payments table
+    m_email = request.form['membershipEmail']
+    m_description = request.form['planDescription'] # modify db
+    
     # Save date and time
     current_datetime = datetime.now()
     formatted_datetime = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
+    
+    # Upload data to database
+    db.execute("INSERT INTO members (name, gym_id, plan_id, routine_id, email, start_date) "
+           "VALUES (:m_name, :user_id, :m_plan_id, :m_routine_id, :m_email, :formatted_datetime)",
+           m_name=m_name, user_id=session["user_id"], m_plan_id=m_plan_id, m_routine_id=m_routine_id,
+           m_email=m_email, formatted_datetime=formatted_datetime)
+
+    
+    # Return to memberships page
+    return redirect(url_for('plans'))
 
 
 @app.route('/memberships', methods=['GET'])
@@ -122,10 +149,23 @@ def memberships():
     
     user_id = session.get("user_id")
     
+    routines = db.execute("SELECT * FROM routines WHERE user_id = :user_id", user_id=user_id)
     plans = db.execute("SELECT * FROM plans WHERE user_id = :user_id", user_id=user_id)
     users = db.execute("SELECT * FROM users WHERE id = :id", id=user_id)
 
     return render_template("memberships.html", users=users, plans=plans)
+
+
+@app.route('/routines', methods=['GET'])
+def routines():
+    """Show routines"""
+    
+    user_id = session.get("user_id")
+    
+    routines = db.execute("SELECT * FROM routines WHERE user_id = :user_id", user_id=user_id)
+    users = db.execute("SELECT * FROM users WHERE id = :id", id=user_id)
+
+    return render_template("routines.html", users=users, routines=routines)
 
 
 
