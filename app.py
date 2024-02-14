@@ -30,22 +30,22 @@ def home():
 def index():
     """Load index page"""
 
-    # select habits, users, and sections data
-    #habits = db.execute(
-        #"SELECT habits.*, sections.title as section_title "
-        #"FROM habits "
-        #"JOIN sections ON habits.section_id = sections.id "
-        #"WHERE habits.user_id = :id",
+    # select plans, users, and sections data
+    #plans = db.execute(
+        #"SELECT plans.*, sections.title as section_title "
+        #"FROM plans "
+        #"JOIN sections ON plans.section_id = sections.id "
+        #"WHERE plans.user_id = :id",
         #id=session["user_id"]
     #)
 
     users = db.execute("SELECT * FROM users WHERE id = :id", id=session["user_id"])
 
-    # Retrieve specific habit data
-    #habit_id = request.args.get("habit_id")  # Get the habit ID of the request
-    #habit = None
-    #if habit_id:
-        #habit = db.execute("SELECT * FROM habits WHERE id = :id", id=habit_id).fetchone()
+    # Retrieve specific plan data
+    #plan_id = request.args.get("plan_id")  # Get the plan ID of the request
+    #plan = None
+    #if plan_id:
+        #plan = db.execute("SELECT * FROM plans WHERE id = :id", id=plan_id).fetchone()
 
 
     return render_template("index.html", users=users)
@@ -64,17 +64,62 @@ def plans():
 
 
 @app.route('/delete_plan/<int:plan_id>', methods=['POST'])
-def delete_habit(plan_id):
+def delete_plan(plan_id):
     """Delete plan"""
 
     # get element ID
     plan = db.execute("SELECT * FROM plans WHERE id = :plan_id", plan_id=plan_id)
 
     if len(plan) == 1:
+        db.execute("UPDATE members SET plan_id = NULL WHERE plan_id = :plan_id", plan_id=plan_id)
+        
         db.execute("DELETE FROM plans WHERE id = :plan_id", plan_id=plan_id)
+        
 
     # Redirect user to index page
     return redirect(url_for('plans'))
+
+@app.route('/get_plan/<int:plan_id>', methods=['GET'])
+def get_plan(plan_id):
+    """get plan data"""
+
+    # Get the plan from the database
+    result = db.execute("SELECT * FROM plans WHERE id = :plan_id", plan_id=plan_id)
+    plan = result[0]
+    if plan:
+        # Create a dictionary with the plan data
+        plan_data = {
+            'id': plan['id'],
+            'name': plan['name'],
+            'days': int(plan['days']),
+            'price': float(plan['price']),
+            'description': plan['description']
+            
+        }
+        # Return the plan data as a JSON response
+        return jsonify(plan_data)
+    else:
+        return jsonify({'error': 'plan not found'})
+
+@app.route('/edit_plan/<int:plan_id>', methods=['GET', 'POST'])
+def edit_plan(plan_id):
+    """Edit plan"""
+    plan = db.execute("SELECT * FROM plans WHERE id = :plan_id", plan_id=plan_id)
+    if len(plan) == 1:
+        # Get the new form data
+        plan_name = request.form['editPlanName']
+        plan_days = request.form['editDays']
+        plan_price = request.form['editPlanPrice']
+        plan_description = request.form['editPlanDescription']          
+
+        # Update the plan data in the database
+    db.execute("UPDATE plans SET name = :plan_name, days = :plan_days, price = :plan_price, description = :plan_description WHERE id = :plan_id",
+                   plan_name=plan_name, plan_days=plan_days, plan_price=plan_price, plan_description=plan_description, plan_id=plan_id)
+
+    # Redirect user to index page
+    return redirect(url_for('plans'))
+
+
 
 
 
@@ -148,22 +193,22 @@ def memberships():
     """Show memberships"""
     """ query = request.args.get('query', '')  # Get URL search parameter
 
-    # Select records' data with habits' information and apply the search query, ordered by date descending
+    # Select records' data with plans' information and apply the search query, ordered by date descending
     records = db.execute(
-        "SELECT records.*, habits.name AS habit_name, habits.type "
+        "SELECT records.*, plans.name AS plan_name, plans.type "
         "FROM records "
-        "JOIN habits ON records.habit_id = habits.id "
-        "WHERE records.user_id = :id AND habits.name LIKE :query "
+        "JOIN plans ON records.plan_id = plans.id "
+        "WHERE records.user_id = :id AND plans.name LIKE :query "
         "ORDER BY records.date DESC",
         id=session["user_id"],
         query=f"%{query}%"
     )
 
 
-    # Convert the results to RecordWithHabit objects
-    records_with_habits = [
-        RecordWithHabit(
-            name=record['habit_name'],
+    # Convert the results to RecordWithplan objects
+    records_with_plans = [
+        RecordWithplan(
+            name=record['plan_name'],
             type=record['type'],
             state=record['state'],
             streak=record['current_streak'],
@@ -172,7 +217,7 @@ def memberships():
         for record in records
     ]
 
-    return render_template("records.html", records=records_with_habits, query=query)
+    return render_template("records.html", records=records_with_plans, query=query)
     """
     
     user_id = session.get("user_id")

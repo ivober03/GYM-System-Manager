@@ -320,56 +320,53 @@
     });
   });
 
-  // Get all habit edit buttons
-  var editHabitBtns = document.querySelectorAll('.edit-habit-btn');
+// Get all plan edit buttons
+var editPlanBtns = document.querySelectorAll('.edit-plan-btn');
 
-  // Handle click event for each button
-  editHabitBtns.forEach(function(editHabitBtn) {
-    editHabitBtn.addEventListener('click', function() {
-      var habitId = this.getAttribute('data-habit-id');
+// Handle click event for each button
+editPlanBtns.forEach(function(editPlanBtn) {
+  editPlanBtn.addEventListener('click', function() {
+    var planId = this.getAttribute('data-plan-id');
 
-      // Make an AJAX request to get the data
-      var xhr = new XMLHttpRequest();
-      xhr.open('GET', '/get_habit/' + habitId);
-      xhr.onload = function() {
-        if (xhr.status === 200) {
-          var habit = JSON.parse(xhr.responseText);
+    // Make an AJAX request to get the data
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', '/get_plan/' + planId);
+    xhr.onload = function() {
+      if (xhr.status === 200) {
+        var plan = JSON.parse(xhr.responseText);
 
-          // Complete modal with the data
-          document.getElementById('editHabitName').value = habit.name;
-          document.getElementById('editHabitValue').value = habit.value;
-          document.getElementById('editHabitDuration').value = habit.duration;
-          document.getElementById('editHabitPeriod').value = habit.period;
-          document.getElementById('editHabitRepeatON').value = habit.repeat;
-          document.getElementById('editHabitNotes').value = habit.notes;
-          document.getElementById('editHabitShowAt').value = habit.show_at;
+        // Complete modal with the data
+        document.getElementById('editPlanName').value = plan.name;
+        document.getElementById('editPlanPrice').value = plan.price;
+        document.getElementById('editDays').value = plan.days;
+        document.getElementById('editPlanDescription').value = plan.description;
 
+        // Get form reference
+        var form = document.getElementById('editPlanForm');
 
-          // Get form reference
-          var form = document.getElementById('editGoodHabitForm');
+        // Update the 'action' attribute of the form
+        form.action = '/edit_plan/' + planId;
 
-          // Update the 'action' attribute of the form
-          form.action = '/edit_good_habit/' + habitId;
+        // Open edit plan modal
+        var editPlanModal = new bootstrap.Modal(document.getElementById('editPlanModal'));
+        editPlanModal.show();
 
-          // Open edit habit modal
-          var editGoodHabitModal = new bootstrap.Modal(document.getElementById('editGoodHabitModal'));
-          editGoodHabitModal.show();
-
-          var closeButtons = document.querySelectorAll('[data-bs-dismiss="modal"]');
-          closeButtons.forEach(function(closeButton) {
-            closeButton.addEventListener('click', function() {
-              editGoodHabitModal.hide();
-            });
+        var closeButtons = document.querySelectorAll('[data-bs-dismiss="modal"]');
+        closeButtons.forEach(function(closeButton) {
+          closeButton.addEventListener('click', function() {
+            editPlanModal.hide();
           });
+        });
 
-        } else {
-          alert('Error al obtener los datos del hábito');
-        }
+      } else {
+        alert('Error al obtener los datos del plan');
+      }
 
-      };
-      xhr.send();
-    });
+    };
+    xhr.send();
   });
+});
+
 
   // Initialize all Pikaday calendars
   var picker = new Pikaday({
