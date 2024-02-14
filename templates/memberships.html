@@ -27,12 +27,50 @@
 <section class="section dashboard">
 
   <div class="col-lg-12">
-    <!-- Start row -->
-    <div class="row">
-
-
-
-    </div>
+    <form action="" method="GET" class="mb-3">
+      <div class="input-group">
+        <input type="text" name="query" class="form-control" placeholder="Buscar miembro por nombre" value="">
+        <button type="submit" class="btn btn-primary">Buscar</button>
+      </div>
+    </form>
+    
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th scope="col">Nombre</th>
+          <th scope="col">Plan</th>
+          <th scope="col">Rutina</th>
+          <th scope="col">Estado</th>
+          <th scope="col">Gmail</th>
+          <th scope="col">Fecha de inicio</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for member in members %}
+      <tr>
+        <td>{{ member['name'] }}</td>
+        <td>
+          {% for plan in plans %}
+            {% if member['plan_id'] == plan['id'] %}
+              {{plan.name}}
+            {% endif %}
+          {% endfor %}
+        </td>
+        <td>
+          {% for routine in routines %}
+            {% if member['routine_id'] == routine['id'] %}
+              {{routine.name}}
+            {% endif %}
+          {% endfor %}
+        </td>
+        <td></td>
+        <td>{{member.email}}</td>
+        <td>{{member.start_date}}</td>
+        
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
   </div>
 </section>
 

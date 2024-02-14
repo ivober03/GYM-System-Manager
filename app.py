@@ -146,14 +146,43 @@ def create_new_membership():
 @app.route('/memberships', methods=['GET'])
 def memberships():
     """Show memberships"""
+    """ query = request.args.get('query', '')  # Get URL search parameter
+
+    # Select records' data with habits' information and apply the search query, ordered by date descending
+    records = db.execute(
+        "SELECT records.*, habits.name AS habit_name, habits.type "
+        "FROM records "
+        "JOIN habits ON records.habit_id = habits.id "
+        "WHERE records.user_id = :id AND habits.name LIKE :query "
+        "ORDER BY records.date DESC",
+        id=session["user_id"],
+        query=f"%{query}%"
+    )
+
+
+    # Convert the results to RecordWithHabit objects
+    records_with_habits = [
+        RecordWithHabit(
+            name=record['habit_name'],
+            type=record['type'],
+            state=record['state'],
+            streak=record['current_streak'],
+            date=record['date']
+        )
+        for record in records
+    ]
+
+    return render_template("records.html", records=records_with_habits, query=query)
+    """
     
     user_id = session.get("user_id")
     
     routines = db.execute("SELECT * FROM routines WHERE user_id = :user_id", user_id=user_id)
     plans = db.execute("SELECT * FROM plans WHERE user_id = :user_id", user_id=user_id)
     users = db.execute("SELECT * FROM users WHERE id = :id", id=user_id)
+    members = db.execute("SELECT * FROM members WHERE gym_id = :gym_id", gym_id=user_id)
 
-    return render_template("memberships.html", users=users, plans=plans, routines=routines)
+    return render_template("memberships.html", users=users, plans=plans, routines=routines, members=members)
 
 
 @app.route('/routines', methods=['GET'])
