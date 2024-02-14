@@ -76,8 +76,24 @@ def delete_plan(plan_id):
         db.execute("DELETE FROM plans WHERE id = :plan_id", plan_id=plan_id)
         
 
-    # Redirect user to index page
+    # Redirect user to plans page
     return redirect(url_for('plans'))
+
+
+@app.route('/delete_member/<int:member_id>', methods=['POST'])
+def delete_member(member_id):
+    """Delete member"""
+
+    # get element ID
+    member = db.execute("SELECT * FROM members WHERE id = :member_id", member_id=member_id)
+
+    if len(member) == 1:
+        db.execute("DELETE FROM members WHERE id = :member_id", member_id=member_id)
+        
+
+    # Redirect user to members page
+    return redirect(url_for('memberships'))
+
 
 @app.route('/get_plan/<int:plan_id>', methods=['GET'])
 def get_plan(plan_id):
