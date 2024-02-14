@@ -320,45 +320,44 @@
     });
   });
 
-  // Get all habit edit buttons
-  var editHabitBtns = document.querySelectorAll('.edit-habit-btn');
+  // Get all plan edit buttons
+  var editPlanBtns = document.querySelectorAll('.edit-plan-btn');
 
   // Handle click event for each button
-  editHabitBtns.forEach(function(editHabitBtn) {
-    editHabitBtn.addEventListener('click', function() {
-      var habitId = this.getAttribute('data-habit-id');
+  editPlanBtns.forEach(function(editPlanBtn) {
+    editPlanBtn.addEventListener('click', function() {
+      var planId = this.getAttribute('data-plan-id');
 
       // Make an AJAX request to get the data
       var xhr = new XMLHttpRequest();
-      xhr.open('GET', '/get_habit/' + habitId);
+      xhr.open('GET', '/get_plan/' + planId);
       xhr.onload = function() {
         if (xhr.status === 200) {
-          var habit = JSON.parse(xhr.responseText);
+          var plan = JSON.parse(xhr.responseText);
 
           // Complete modal with the data
-          document.getElementById('editHabitName').value = habit.name;
-          document.getElementById('editHabitValue').value = habit.value;
-          document.getElementById('editHabitDuration').value = habit.duration;
-          document.getElementById('editHabitPeriod').value = habit.period;
-          document.getElementById('editHabitRepeatON').value = habit.repeat;
-          document.getElementById('editHabitNotes').value = habit.notes;
-          document.getElementById('editHabitShowAt').value = habit.show_at;
+          document.getElementById('editPlanName').value = plan.name;
+          document.getElementById('editPlanPrice').value = plan.value;
+          document.getElementById('editDays').value = plan.duration;
+          document.getElementById('editPlanDescription').value = plan.period;
+          
+          
 
 
           // Get form reference
-          var form = document.getElementById('editGoodHabitForm');
+          var form = document.getElementById('editPlanForm');
 
           // Update the 'action' attribute of the form
-          form.action = '/edit_good_habit/' + habitId;
+          form.action = '/edit_plan/' + planId;
 
-          // Open edit habit modal
-          var editGoodHabitModal = new bootstrap.Modal(document.getElementById('editGoodHabitModal'));
-          editGoodHabitModal.show();
+          // Open edit plan modal
+          var editPlanModal = new bootstrap.Modal(document.getElementById('editPlanModal'));
+          editGoodplanModal.show();
 
           var closeButtons = document.querySelectorAll('[data-bs-dismiss="modal"]');
           closeButtons.forEach(function(closeButton) {
             closeButton.addEventListener('click', function() {
-              editGoodHabitModal.hide();
+              editPlanModal.hide();
             });
           });
 
