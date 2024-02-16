@@ -257,6 +257,21 @@ def routines():
 
     return render_template("routines.html", users=users, routines=routines)
 
+@app.route('/delete_routine/<int:routine_id>', methods=['POST'])
+def delete_routine(routine_id):
+    """Delete routine"""
+
+    # get element ID
+    routine = db.execute("SELECT * FROM plans WHERE id = :routine_id", routine_id=routine_id)
+
+    if len(routine) == 1:
+        db.execute("DELETE FROM routines WHERE id = :routine_id", routine_id=routine_id)
+        
+
+    # Redirect user to plans page
+    return redirect(url_for('routines'))
+
+
 
 
 @app.route('/login', methods=['GET', 'POST'])
