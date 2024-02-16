@@ -116,6 +116,37 @@ def get_plan(plan_id):
         return jsonify(plan_data)
     else:
         return jsonify({'error': 'plan not found'})
+    
+
+@app.route('/get_member/<int:member_id>', methods=['GET'])
+def get_member(member_id):
+    """get member data"""
+
+    # Get the member from the database
+    result = db.execute("SELECT * FROM member WHERE id = :member_id", member_id=member_id)
+    member = result[0]
+    if member:
+        # Get plan and routine name
+        plan_id = member['plan_id']
+        routine_id = member['routine_id']
+        plan_name = db.execute("SELECT name FROM plans WHERE id = :plan_id", plan_id=plan_id)
+        routine_name = db.execute("SELECT name FROM routines WHERE id = :routine_id", routine_id=routine_id)
+
+
+        # Create a dictionary with the member data
+        member_data = {
+            'id': member['id'],
+            'name': member['name'],
+            'plan_name': plan_name,
+            'routine_name': routine_name,
+            'status': member['status'],
+            'email': member['email']
+        }
+        # Return the member data as a JSON response
+        return jsonify(member_data)
+    else:
+        return jsonify({'error': 'member not found'})
+    
 
 @app.route('/edit_plan/<int:plan_id>', methods=['GET', 'POST'])
 def edit_plan(plan_id):

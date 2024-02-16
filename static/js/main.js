@@ -229,28 +229,30 @@ editMemberBtns.forEach(function(editMemberBtn) {
 
         // Complete modal with the data
         document.getElementById('editMemberName').value = member.name;
-        document.getElementById('editMemberPlan').value = member.plan_id;
-
-
+        document.getElementById('editMemberPlan').value = member.plan_name;
+        document.getElementById('editMemberRoutine').value = member.routine_name;
+        document.getElementById('editMemberStatus').value = member.status;
+        document.getElementById('editMemberEmail').value = member.email;
+       
         // Get form reference
-        var form = document.getElementById('editPlanForm');
+        var form = document.getElementById('editModalForm');
 
         // Update the 'action' attribute of the form
-        form.action = '/edit_plan/' + planId;
+        form.action = '/edit_member/' + memberId;
 
-        // Open edit plan modal
-        var editPlanModal = new bootstrap.Modal(document.getElementById('editPlanModal'));
-        editPlanModal.show();
+        // Open edit member modal
+        var editPlanModal = new bootstrap.Modal(document.getElementById('editMemberModal'));
+        editMemberModal.show();
 
         var closeButtons = document.querySelectorAll('[data-bs-dismiss="modal"]');
         closeButtons.forEach(function(closeButton) {
           closeButton.addEventListener('click', function() {
-            editPlanModal.hide();
+            editMemberModal.hide();
           });
         });
 
       } else {
-        alert('Error al obtener los datos del plan');
+        alert('Error al obtener los datos del miembro');
       }
 
     };
