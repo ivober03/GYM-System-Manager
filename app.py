@@ -262,13 +262,53 @@ def delete_routine(routine_id):
     """Delete routine"""
 
     # get element ID
-    routine = db.execute("SELECT * FROM plans WHERE id = :routine_id", routine_id=routine_id)
+    routine = db.execute("SELECT * FROM routines WHERE id = :routine_id", routine_id=routine_id)
 
     if len(routine) == 1:
+        db.execute("UPDATE members SET routine_id = NULL WHERE routine_id = :routine_id", routine_id=routine_id)
         db.execute("DELETE FROM routines WHERE id = :routine_id", routine_id=routine_id)
+        
         
 
     # Redirect user to plans page
+    return redirect(url_for('routines'))
+
+@app.route('/get_routine/<int:routine_id>', methods=['GET'])
+def get_routine(routine_id):
+    """get routine data"""
+
+    # Get the routine from the database
+    result = db.execute("SELECT * FROM routines WHERE id = :routine_id", routine_id=routine_id)
+    routine = result[0]
+    if routine:
+        # Create a dictionary with the routine data
+        routine_data = {
+            'id': int(routine['id']),
+            'name': routine['name'],
+            'description': routine['description'],
+            'pdf': routine['pdf_link']
+            
+        }
+        # Return the routine data as a JSON response
+        return jsonify(routine_data)
+    else:
+        return jsonify({'error': 'routine not found'})
+    
+@app.route('/edit_routine/<int:routine_id>', methods=['POST', 'GET'])
+def edit_routine(routine_id):
+    """Edit Routine"""
+    routine = db.execute("SELECT * FROM routines WHERE id = :routine_id", routine_id= routine_id)
+    if len(routine) == 1:
+        # Get the new form data
+        routine_name = request.form['editRoutineName']
+        routine_description = request.form['editRoutineDescription']
+        routine_pdf = request.form['editRoutinePdf']          
+
+        # Update the plan data in the database
+    db.execute("UPDATE routines SET name = :routine_name, description = :routine_description, pdf_link = :routine_pdf  WHERE id = :routine_id",
+                   routine_name=routine_name, routine_description=routine_description, routine_pdf=routine_pdf, routine_id=routine_id)
+
+    # Redirect user to index page
     return redirect(url_for('routines'))
 
 
