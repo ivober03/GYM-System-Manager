@@ -1,0 +1,8 @@
+todo list:
+- Como subir un pdf a una base de datos u otra alternativa en la nube
+- Hacer la pagina individual para cada miembro
+- Vincular la informacion para mostrarla en el dashboard
+-- Miembros:
+  - Manejar periodo de membresia
+  - Enviar un mail de recivo y vencimiento de la cuota
+  - En base al pago de la cuota actualizar el estado de cada miembro

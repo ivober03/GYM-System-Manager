@@ -62,6 +62,17 @@ def plans():
     
     return render_template("plans.html", user=user, plans=plans)
 
+@app.route('/payments', methods=['GET'])
+def payments():
+    """Show plans"""
+
+    # Select plans and user data
+
+    payments = db.execute("SELECT * FROM payments WHERE user_id = :user_id", user_id=session["user_id"])
+    members = db.execute("SELECT * FROM memberships WHERE user_id = : user_id", user_id=session["user_id"])
+    
+    return render_template("payments.html", user=user, payments=payments)
+
 
 @app.route('/delete_plan/<int:plan_id>', methods=['POST'])
 def delete_plan(plan_id):
