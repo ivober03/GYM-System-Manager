@@ -70,7 +70,7 @@
           <td>{{member.email}}</td>
           <td>{{member.start_date}}</td>
           <td style="padding-top: 10px;"> <!-- Actions column -->
-            <button class="dropdown-item edit-member-btn" type="button" data-bs-target="#editMemberModal" data-bs-toggle="modal" data-plan-id="{{member['id']}}" aria-haspopup="true" aria-expanded="false" style="margin-right: 23px; display: inline-block; color: blue">
+            <button class="dropdown-item edit-member-btn" type="button" data-bs-target="#editMemberModal" data-bs-toggle="modal" data-member-id="{{member['id']}}" aria-haspopup="true" aria-expanded="false" style="margin-right: 23px; display: inline-block; color: blue">
               <i class="bi bi-pencil" style="font-size: 1em;"></i> <!-- Edit icon -->
             </button>
           </td>
@@ -168,47 +168,71 @@
 </div>
 
 
-<!-- Edit member modal section-->
-<div class="modal fade" id="editMemberModal" tabindex="-1" aria-labelledby="editMemberModalLabel" aria-hidden="true">
+<!-- Edit Membership Modal -->
+<div class="modal fade" id="editMembershipModal" tabindex="-1" aria-labelledby="editMembershipModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-md">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="editModalLabel">Editar Plan</h5>
+        <h5 class="modal-title" id="editMembershipModalLabel">Editar Miembro</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
+
       <div class="modal-body">
-        <form id="editMemberForm" method="post">
-          <!--Name label-->
+        <form action="/edit_membership" method="post">
+          <!-- Name label -->
           <div class="mb-3">
-            <label for="editMemberName" class="form-label">Nombre:</label>
+            <label for="editMembershipName" class="form-label">Nombre:</label>
             <div class="input-group">
-              <input type="text" class="form-control" name="editMemberName" id="editMemberName" placeholder="">
+              <input type="text" class="form-control" name="editMembershipName" id="editMembershipName" placeholder="Ingrese el nombre del miembro">
             </div>
           </div>
-          <!--Price label-->
-          <div class="mb-3 row">
-            <div class="col-6">
-              <label for="editPlanPrice" class="form-label">Plan:</label>
-              <div class="input-group">
-                <span class="input-group-text">$</span>
-                <input type="number" class="form-control" id="editPlanPrice" name="editPlanPrice" placeholder="" min="1" value="">
-              </div>
-            </div>
-            <!--Days label-->
-            <div class="col-6">
-              <label for="editDays" class="form-label">Días:</label>
-              <input type="number" class="form-control" id="editDays" name="editDays" placeholder="" min="1" value="">
-            </div>
-          </div>
-          <!--Description label-->
+          <!-- Plan label -->
           <div class="mb-3">
-            <label for="editPlanDescription" class="form-label">Descripción:</label>
-            <textarea class="form-control" id="editPlanDescription" name="editPlanDescription" placeholder=""></textarea>
+            <label for="editMembershipPlan" class="form-label">Plan:</label>
+            <div class="input-group">
+              <select class="form-select" id="editMembershipPlan" name="editMembershipPlan">
+                {% for plan in plans %}
+                  <option value="{{ plan['id'] }}">{{ plan['name'] }}</option>
+                {% endfor %}
+              </select>
+            </div>
           </div>
-          <div class="modal-footer">
-            <button type="submit" class="btn btn-primary">Editar</button>
+          <!-- Rutine label -->
+          <div class="mb-3">
+            <label for="editMembershipRoutine" class="form-label">Rutina:</label>
+            <div class="input-group">
+              <select class="form-select" id="editMembershipRoutine" name="editMembershipRoutine">
+                {% for routine in routines %}
+                  <option value="{{ routine['id'] }}">{{ routine['name'] }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <!-- Email label -->
+          <div class="mb-3">
+            <label for="editMembershipEmail" class="form-label">Email:</label>
+            <div class="input-group">
+              <input type="email" class="form-control" name="editMembershipEmail" id="editMembershipEmail" placeholder="Ingrese el Email">
+            </div>
+          </div>
+          <!-- Payment label -->
+          <div class="mb-3">
+            <label for="editMembershipPayment" class="form-label">Pago:</label>
+            <select class="form-select" id="editMembershipPayment" name="editMembershipPayment">
+              <option value="Efectivo">Efectivo</option>
+              <option value="Transferencia">Transferencia</option>
+              <option value="Pendiente">Pendiente</option>
+            </select>
+          </div>
+          <!-- Description label -->
+          <div class="mb-3">
+            <label for="editMembershipDescription" class="form-label">Descripción:</label>
+            <textarea class="form-control" id="editMembershipDescription" name="editMembershipDescription" placeholder="Ingrese una Descripción"></textarea>
           </div>
         </form>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Editar</button>
       </div>
     </div>
   </div>

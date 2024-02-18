@@ -123,7 +123,7 @@ def get_member(member_id):
     """get member data"""
 
     # Get the member from the database
-    result = db.execute("SELECT * FROM member WHERE id = :member_id", member_id=member_id)
+    result = db.execute("SELECT * FROM members WHERE id = :member_id", member_id=member_id)
     member = result[0]
     if member:
         # Get plan and routine name
@@ -165,9 +165,6 @@ def edit_plan(plan_id):
 
     # Redirect user to index page
     return redirect(url_for('plans'))
-
-
-
 
 
 @app.route('/create_new_plan', methods=['POST'])

@@ -227,7 +227,7 @@ editMemberBtns.forEach(function(editMemberBtn) {
       if (xhr.status === 200) {
         var member = JSON.parse(xhr.responseText);
 
-        // Complete modal with the data
+        // Comp lete modal with the data
         document.getElementById('editMemberName').value = member.name;
         document.getElementById('editMemberPlan').value = member.plan_name;
         document.getElementById('editMemberRoutine').value = member.routine_name;
