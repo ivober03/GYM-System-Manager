@@ -212,6 +212,52 @@ editPlanBtns.forEach(function(editPlanBtn) {
   });
 });
 
+// Get all Routine edit buttons
+var editroutineBtns = document.querySelectorAll('.edit-routine-btn');
+
+// Handle click event for each button
+editroutineBtns.forEach(function(editRoutineBtn) {
+  editRoutineBtn.addEventListener('click', function() {
+    var routineId = this.getAttribute('data-routine-id');
+
+    // Make an AJAX request to get the data
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', '/get_routine/' + routineId);
+    xhr.onload = function() {
+      if (xhr.status === 200) {
+        var routine = JSON.parse(xhr.responseText);
+
+        // Complete modal with the data
+        document.getElementById('editRoutineName').value = routine.name;
+        document.getElementById('editRoutineDescription').value = routine.description;
+        document.getElementById('editRoutinePdf').value = routine.pdf_link;
+
+        // Get form reference
+        var form = document.getElementById('editRoutineForm');
+
+        // Update the 'action' attribute of the form
+        form.action = '/edit_routine/' + routineId;
+
+        // Open edit routine modal
+        var editRoutineModal = new bootstrap.Modal(document.getElementById('editRoutineModal'));
+        editRoutineModal.show();
+
+        var closeButtons = document.querySelectorAll('[data-bs-dismiss="modal"]');
+        closeButtons.forEach(function(closeButton) {
+          closeButton.addEventListener('click', function() {
+            editRoutineModal.hide();
+          });
+        });
+
+      } else {
+        alert('Error al obtener los datos de la rutina');
+      }
+
+    };
+    xhr.send();
+  });
+});
+
 // Get all member buttons
 var editMemberBtns = document.querySelectorAll('.edit-member-btn');
 
@@ -227,21 +273,41 @@ editMemberBtns.forEach(function(editMemberBtn) {
       if (xhr.status === 200) {
         var member = JSON.parse(xhr.responseText);
 
-        // Comp lete modal with the data
-        document.getElementById('editMemberName').value = member.name;
-        document.getElementById('editMemberPlan').value = member.plan_name;
-        document.getElementById('editMemberRoutine').value = member.routine_name;
-        document.getElementById('editMemberStatus').value = member.status;
-        document.getElementById('editMemberEmail').value = member.email;
+        // Complete modal with the data
+        document.getElementById('editMembershipName').value = member.name;
+        console.log('Plan ID:', member.plan_id);
+        console.log('Routine ID:', member.routine_id);
+
+        // Select the correct plan
+        var planSelect = document.getElementById('editMembershipPlan');
+        for (var i = 0; i < planSelect.options.length; i++) {
+          if (planSelect.options[i].value == member.plan_id) {
+            planSelect.options[i].selected = true;
+            break;
+          }
+        }
+
+        // Select the correct routine
+        var routineSelect = document.getElementById('editMembershipRoutine');
+        for (var j = 0; j < routineSelect.options.length; j++) {
+          if (routineSelect.options[j].value == member.routine_id) {
+            routineSelect.options[j].selected = true;
+            break;
+          }
+        }
+
+        document.getElementById('editMembershipEmail').value = member.email;
+        document.getElementById('editMembershipNumber').value = member.number;
+        document.getElementById('editMembershipDescription').value = member.description;
        
         // Get form reference
-        var form = document.getElementById('editModalForm');
+        var form = document.getElementById('editMemberForm');
 
         // Update the 'action' attribute of the form
         form.action = '/edit_member/' + memberId;
 
         // Open edit member modal
-        var editPlanModal = new bootstrap.Modal(document.getElementById('editMemberModal'));
+        var editMemberModal = new bootstrap.Modal(document.getElementById('editMembershipModal'));
         editMemberModal.show();
 
         var closeButtons = document.querySelectorAll('[data-bs-dismiss="modal"]');
@@ -259,6 +325,7 @@ editMemberBtns.forEach(function(editMemberBtn) {
     xhr.send();
   });
 });
+
 
   var currentDate = moment().format('ddd MMM DD YYYY'); // Get formated current date
   console.log(currentDate);
