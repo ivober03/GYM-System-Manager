@@ -68,10 +68,10 @@ def payments():
 
     # Select plans and user data
 
-    payments = db.execute("SELECT * FROM payments WHERE user_id = :user_id", user_id=session["user_id"])
-    members = db.execute("SELECT * FROM memberships WHERE user_id = : user_id", user_id=session["user_id"])
     
-    return render_template("payments.html", user=user, payments=payments)
+    user = db.execute("SELECT * FROM users WHERE id = :user_id", user_id=session["user_id"])
+    
+    return render_template("payments.html", user=user, )
 
 
 @app.route('/delete_plan/<int:plan_id>', methods=['POST'])
