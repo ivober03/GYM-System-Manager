@@ -68,10 +68,45 @@ def payments():
 
     # Select plans and user data
 
-    
+    payments = db.execute("SELECT * FROM payments WHERE gym_id = :id", id=session["user_id"])
+    members = db.execute("SELECT * FROM members WHERE gym_id = :id", id=session["user_id"])
     user = db.execute("SELECT * FROM users WHERE id = :user_id", user_id=session["user_id"])
     
-    return render_template("payments.html", user=user, )
+    return render_template("payments.html", user=user, payments=payments, members = members)
+
+@app.route('/create_new_payment', methods=['POST'])
+def create_new_payment():
+    # Get form data
+    p_name = request.form['paymentMemberName']
+    p_type = request.form['paymentType']
+    
+    # Save date and time
+    current_datetime = datetime.now()
+    formatted_datetime = current_datetime.strftime("%Y-%m-%d")
+    
+    # Upload data to database
+    db.execute("INSERT INTO payments (type, date, member_id, gym_id) "
+           "VALUES ( :p_type, :formatted_datetime, :p_name, :gym_id )",
+            p_type=p_type,  gym_id=session["user_id"],  formatted_datetime=formatted_datetime, p_name=p_name)
+
+    
+    # Return to memberships page
+    return redirect(url_for('payments'))
+
+@app.route('/delete_payment/<int:payment_id>', methods=['POST'])
+def delete_payment(payment_id):
+    """Delete payment"""
+
+    # get element ID
+    payment = db.execute("SELECT * FROM payments WHERE id = :payment_id", payment_id=payment_id)
+
+    if len(payment) == 1:
+        db.execute("DELETE FROM payments WHERE id = :payment_id", payment_id=payment_id)
+        
+
+    # Redirect user to members page
+    return redirect(url_for('payments'))
+    
 
 
 @app.route('/delete_plan/<int:plan_id>', methods=['POST'])

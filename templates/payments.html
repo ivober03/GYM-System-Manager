@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block title %}
-  Memberships
+  payments
 {% endblock %}
 
 {% block main %}
@@ -14,7 +14,7 @@
       <div class="" style="display: inline-block;">
         <div style="display: inline-block;margin-bottom:10px;margin-top:14px;">
           <div class="btn-group">
-            <button class="btn btn-primary ms-auto mr-2" type="button" style="white-space: nowrap;"  aria-haspopup="true" aria-expanded="false" data-bs-toggle="modal" data-bs-target="#createNewMembershipModal">
+            <button class="btn btn-primary ms-auto mr-2" type="button" style="white-space: nowrap;"  aria-haspopup="true" aria-expanded="false" data-bs-toggle="modal" data-bs-target="#createNewPaymentModal">
             <i class="bi bi-plus-lg "></i>   Ingresar Pagos
             </button>
           </div>
@@ -27,9 +27,9 @@
 <section class="section dashboard">
 
   <div class="col-lg-12">
-    <form action="{{ url_for('memberships') }}" method="GET" class="mb-3">
+    <form action="{{ url_for('payments') }}" method="GET" class="mb-3">
       <div class="input-group">
-        <input type="text" name="query" class="form-control" placeholder="Buscar miembro por nombre" value="{{query}}">
+        <input type="text" name="query" class="form-control" placeholder="Buscar Pago por nombre" value="{{query}}">
         <button type="submit" class="btn btn-primary">Buscar</button>
       </div>
     </form>
@@ -38,49 +38,31 @@
       <thead style="vertical-align: middle;">
         <tr>
           <th scope="col">Nombre</th>
-          <th scope="col">Plan</th>
-          <th scope="col">Rutina</th>
-          <th scope="col">Estado</th>
-          <th scope="col">Gmail</th>
-          <th scope="col">Número</th>
-          <th scope="col">Fecha de inicio</th>
-          <th scope="col"></th> <!-- New column for buttons -->
-          <th scope="col"></th> <!-- New column for buttons -->
-
+          <th scope="col">Forma de pago</th>
+          <th scope="col">Fecha de pago</th>
+          <th scope="col"></th>
         </tr>
       </thead>
       <tbody style="vertical-align: middle;" >
-        {% for member in members %}
+        {% for payment in payments %}
         <tr>
-          <td>{{ member['name'] }}</td>
+          
           <td>
-            {% for plan in plans %}
-              {% if member['plan_id'] == plan['id'] %}
-                {{plan.name}}
-              {% endif %}
+            {% for member in members %}
+              {% if payment['member_id'] == member['id'] %}
+                {{member.name}}
+                {% endif %}
             {% endfor %}
           </td>
-          <td>
-            {% for routine in routines %}
-              {% if member['routine_id'] == routine['id'] %}
-                {{routine.name}}
-              {% endif %}
-            {% endfor %}
-          </td>
-          <td></td>
-          <td>{{member.email}}</td>
-          <td>{{member.emergency_contact}}</td>
-          <td>{{member.start_date}}</td>
+          
+          <td>{{payment.type}}</td>
+          <td>{{payment.date}}</td>
+          
 
-          <td style="padding-top: 10px;"> <!-- Actions column -->
-            <button class="edit-member-btn btn btn-outline-primary btn-sm" style="background-color: transparent;  vertical-align: middle;" type="button" data-bs-target="#editMemberModal" data-bs-toggle="modal" data-member-id="{{member['id']}}" aria-haspopup="true" aria-expanded="false" >
-              <i class="bi bi-pencil" style="font-size: 1em; color: blue;"></i> <!-- Edit icon -->
-            </button>
-          </td>
         
           <td style="padding-top: 10px;"> <!-- Actions column -->
-            <form action="/delete_member/{{ member['id'] }}" method="post" style="display: inline-block;">
-                <button type="submit" class="btn btn-outline-danger btn-sm" style="background-color: transparent;  vertical-align: middle;" onclick="return confirm('Una vez borrado no se podrán recuperar los datos del miembro. ¿Desea borrarlo sabiendo esto?')">
+            <form action="/delete_payment/{{ payment['id'] }}" method="post" style="display: inline-block;">
+                <button type="submit" class="btn btn-outline-danger btn-sm" style="background-color: transparent;  vertical-align: middle;" onclick="return confirm('Una vez borrado no se podrán recuperar los datos del pago. ¿Desea borrarlo sabiendo esto?')">
                     <i class="bi bi-trash" style="font-size: 1.1em; color: red;"></i> <!-- Delete icon -->
                 </button> <!-- Delete button -->
             </form>
@@ -93,172 +75,54 @@
   </div>
 </section>
 
-<!--Create Membership Modal-->
-<div class="modal fade" id="createNewMembershipModal" tabindex="-1" aria-labelledby="createNewMembershipModalLabel" aria-hidden="true">
+<!--Create Payment Modal-->
+<div class="modal fade" id="createNewPaymentModal" tabindex="-1" aria-labelledby="createNewPaymentModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-md">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="createNewMembershipModalLabel">Agregar Nuevo Miembro</h5>
+        <h5 class="modal-title" id="createNewPayementModalLabel">Agregar Nuevo pago</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
       <div class="modal-body">
-        <form action="/create_new_membership" method="post" >
-          <!--Name label-->
+        <form action="/create_new_payment" method="post" >
+
+          <!--Member label-->
           <div class="mb-3">
-            <label for="membership_name" class="form-label">Nombre Completo:</label>
+            <label for="paymentMemberName" class="form-label">Miembro:</label>
+              <div class="input-group">
+                <!--Implementar busqueda en la seleccion del miembro-->
+                <select class="form-select" id="paymentMemberName" name="paymentMemberName">
+                  {% for member in members %}
+                  <option value="{{ member['id'] }}">{{ member['name'] }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+          
+
+          <!--Type label-->
+          <div class="mb-3 row">
+            <label for="paymentType" class="form-label">Forma de pago:</label>
             <div class="input-group">
-              <input type="text" class="form-control" name="membershipName" id="membershipName" placeholder="Ingrese el nombre del miembro">
-              <div class="dropdown">
-              </div>
-            </div>
-          </div>
-          <!--Emergency N°  label-->
-          <div class="mb-3 row">
-            <div class="col-6">
-              <label for="membershipNumber" class="form-label">N° Emergencias:</label>
-              <input type="membershipNumber" name="membershipNumber" class="form-control" id="membershipNumber" placeholder="Número para emergencias">
-          </div>
-          <!--Gender  label-->
-            <div class="col-6">
-              <label for="membershipGender" class="form-label">Género:</label>  
-              <div class="input-group">
-                <select class="form-select" id="membershipGender" name="membershipGender">
-                  <option value="men">Hombre</option>
-                  <option value="women">Mujer</option>
-
-                </select>
-              </div>
-          </div>
-        </div>
-
-          <!--Plan label-->
-          <div class="mb-3 row">
-            <div class="col-6">
-              <label for="membershipPlan" class="form-label">Plan:</label>
-              <div class="input-group">
-                <select class="form-select" id="membershipPlan" name="membershipPlan">
-                  {% for plan in plans %}
-                  <option value="{{ plan['id'] }}">{{ plan['name'] }}</option>
-                  {% endfor %}
-                </select>
-              </div>
-            </div>
-            <!--Rutine label-->
-            <div class="col-6">
-              <label for="days" class="form-label">Rutina:</label>
-              <select class="form-select" id="membershiRoutine" name="membershipRoutine">
-                  <!-- Implementar for recorriendo la base de datos y agregando las opciones -->
-                  {% for routine in routines %}
-                  <option value="{{ routine['id'] }}">{{ routine['name'] }}</option>
-                  {% endfor %}
+              <select name="paymentType" id="paymentType" class="form-select">
+                <option value="Efectivo">Efectivo</option>
+                <option value="Transference">Transferencia</option>
+                <option value="Tarjeta">Tarjeta</option>
               </select>
-            </div>
-            </div>
-
-            <!--Email  label-->
-            <div class="mb-3 row">
-              <div class="col-6">
-                <label for="membershipEmail" class="form-label">Email:</label>
-                <input type="membershipEmail" name="membershipEmail" class="form-control" id="membershipEmail" placeholder="Ingrese el Email">
-              </div>
-
-            <!--payment label-->
-            <div class="col-6">
-              <label for="membershipPayment" class="form-label">Pago:</label>
-                <select class="form-select" id="membershipPayment" name="membershipPayment">
-                  <!--Implementar for recorriendo la base de datos y agregando las opciones-->
-                  <option value="sexo">Efectivo</option>
-                  <option value="tula">Transferencia</option>
-                  <option value="Vurpis">Pendiente</option>
-                </select>
-            </div>
-            </div>
-
-            <!--Description label-->
-            <div class="mb-3">
-              <label for="membershipDescription" class="form-label">Descripción:</label>
-              <textarea class="form-control" id="membershipDescription" name="membershipDescription" placeholder="Ingrese una Descripcion"></textarea>
-            </div>
+            </div>  
           </div>
-              <div class="modal-footer">
-              <button type="submit" class="btn btn-primary">Crear</button>
-              </div>
-            </form>
-      </div>
-  </div>
-</div>
 
-
-<!-- Edit Membership Modal -->
-<div class="modal fade" id="editMembershipModal" tabindex="-1" aria-labelledby="editMembershipModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-md">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="editMembershipModalLabel">Editar Miembro</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-
-      <div class="modal-body">
-        <form id="editMemberForm" method="post">
-          <!-- Name label -->
-          <div class="mb-3">
-            <label for="editMembershipName" class="form-label">Nombre:</label>
-            <div class="input-group">
-              <input type="text" class="form-control" name="editMembershipName" id="editMembershipName" placeholder="Ingrese el nombre del miembro">
-            </div>
-          </div>
-          <!-- Plan label -->
-          <div class="mb-3 row">
-            <div class="col-6">
-              <label for="editMembershipPlan" class="form-label">Plan:</label>
-              <div class="input-group">
-                <select class="form-select" id="editMembershipPlan" name="editMembershipPlan">
-                  {% for plan in plans %}
-                    <option value="{{ plan['id'] }}">{{ plan['name'] }}</option>
-                  {% endfor %}
-                </select>
-              </div>
-            </div>
-            <!-- Routine label -->
-            <div class="col-6">
-              <label for="editMembershipRoutine" class="form-label">Rutina:</label>
-              <div class="input-group">
-                <select class="form-select" id="editMembershipRoutine" name="editMembershipRoutine">
-                  {% for routine in routines %}
-                    <option value="{{ routine['id'] }}">{{ routine['name'] }}</option>
-                  {% endfor %}
-                </select>
-              </div>
-            </div>
-          </div>
-          <!-- Email and Payment label -->
-          <div class="mb-3 row">
-            <div class="col-6">
-              <label for="editMembershipEmail" class="form-label">Email:</label>
-              <div class="input-group">
-                <input type="email" class="form-control" name="editMembershipEmail" id="editMembershipEmail" placeholder="Ingrese el Email">
-              </div>
-            </div>
-            <div class="col-6">
-              <label for="editMembershipNumber" class="form-label">N° Emergencias:</label>
-              <input type="text" name="editMembershipNumber" class="form-control" id="editMembershipNumber" placeholder="Número para emergencias">
-            </div>
-          </div>
-          <!-- Description label -->
-          <div class="mb-3">
-            <label for="editMembershipDescription" class="form-label">Descripción:</label>
-            <textarea class="form-control" id="editMembershipDescription" name="editMembershipDescription" placeholder="Ingrese una Descripción"></textarea>
-          </div>
-          <!-- Submit button -->
           <div class="modal-footer">
-            <button type="submit" class="btn btn-primary">Editar</button>
-          </div>
+            <button type="submit" class="btn btn-primary">Ingresar</button>
+            </div>
         </form>
       </div>
     </div>
   </div>
 </div>
+
+
 
 
 
