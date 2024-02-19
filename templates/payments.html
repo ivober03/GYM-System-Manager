@@ -40,7 +40,8 @@
           <th scope="col">Nombre</th>
           <th scope="col">Forma de pago</th>
           <th scope="col">Fecha de pago</th>
-          <th scope="col"></th>
+          <th scope="col">Precio</th>
+          <th></th>
         </tr>
       </thead>
       <tbody style="vertical-align: middle;" >
@@ -57,9 +58,16 @@
           
           <td>{{payment.type}}</td>
           <td>{{payment.date}}</td>
-          
-
-        
+          <td>{% for member in members %}
+                {% if payment['member_id'] == member['id'] %}
+                  {% for plan in plans %}
+                    {% if member['plan_id'] == plan['id'] %}
+                      {{plan.price}} $
+                    {% endif %}
+                  {% endfor %}
+                {% endif %}
+              {% endfor %}            
+          </td>
           <td style="padding-top: 10px;"> <!-- Actions column -->
             <form action="/delete_payment/{{ payment['id'] }}" method="post" style="display: inline-block;">
                 <button type="submit" class="btn btn-outline-danger btn-sm" style="background-color: transparent;  vertical-align: middle;" onclick="return confirm('Una vez borrado no se podrán recuperar los datos del pago. ¿Desea borrarlo sabiendo esto?')">
