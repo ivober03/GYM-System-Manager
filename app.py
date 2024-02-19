@@ -126,21 +126,6 @@ def delete_plan(plan_id):
     return redirect(url_for('plans'))
 
 
-@app.route('/delete_member/<int:member_id>', methods=['POST'])
-def delete_member(member_id):
-    """Delete member"""
-
-    # get element ID
-    member = db.execute("SELECT * FROM members WHERE id = :member_id", member_id=member_id)
-
-    if len(member) == 1:
-        db.execute("DELETE FROM members WHERE id = :member_id", member_id=member_id)
-        
-
-    # Redirect user to members page
-    return redirect(url_for('memberships'))
-
-
 @app.route('/get_plan/<int:plan_id>', methods=['GET'])
 def get_plan(plan_id):
     """get plan data"""
@@ -162,34 +147,7 @@ def get_plan(plan_id):
         return jsonify(plan_data)
     else:
         return jsonify({'error': 'plan not found'})
-    
-
-@app.route('/get_member/<int:member_id>', methods=['GET'])
-def get_member(member_id):
-    """get member data"""
-
-    # Get the member from the database
-    result = db.execute("SELECT * FROM members WHERE id = :member_id", member_id=member_id)
-    member = result[0]
-    if member:
-
-        # Create a dictionary with the member data
-        member_data = {
-            'id': member['id'],
-            'name': member['name'],
-            'plan_id': member['plan_id'],
-            'routine_id': member['routine_id'],
-            'number': member['emergency_contact'],
-            'description': member['description'],
-            'status': member['status'],
-            'email': member['email']
-        }
         
-        # Return the member data as a JSON response
-        return jsonify(member_data)
-    else:
-        return jsonify({'error': 'member not found'})
-    
 
 @app.route('/edit_plan/<int:plan_id>', methods=['GET', 'POST'])
 def edit_plan(plan_id):
@@ -210,63 +168,31 @@ def edit_plan(plan_id):
     return redirect(url_for('plans'))
 
 
-@app.route('/edit_member/<int:member_id>', methods=['GET', 'POST'])
-def edit_member(member_id):
-    """Edit member"""
-    member = db.execute("SELECT * FROM members WHERE id = :member_id", member_id=member_id)
-    if len(member) == 1:
-        # Get the new form data
-        member_name = request.form['editMembershipName']
-        member_plan = request.form['editMembershipPlan']
-        member_routine = request.form['editMembershipRoutine']
-        member_email = request.form['editMembershipEmail']
-        member_number = request.form['editMembershipNumber']
-        member_description = request.form['editMembershipDescription']
+@app.route('/memberships', methods=['GET'])
+def memberships():
+    # Get the user ID from the session
+    user_id = session.get("user_id")
 
-    # Update the member data in the database
-    db.execute("UPDATE members SET name = :member_name, plan_id = :member_plan, routine_id = :member_routine, email = :member_email, emergency_contact = :member_number, description = :member_description WHERE id = :member_id",
-            member_name=member_name, member_plan=member_plan, member_routine=member_routine, member_email=member_email, member_number=member_number, member_description=member_description, member_id=member_id)
-        
-    # Redirect user to index page
-    return redirect(url_for('memberships'))
+    # Fetch the routines, plans, and users data related to the current user
+    routines = db.execute("SELECT * FROM routines WHERE user_id = :user_id", user_id=user_id)
+    plans = db.execute("SELECT * FROM plans WHERE user_id = :user_id", user_id=user_id)
+    users = db.execute("SELECT * FROM users WHERE id = :id", id=user_id)
 
+    # Check if there is a search query parameter in the URL
+    query = request.args.get('query', '')
 
-@app.route('/create_new_plan', methods=['POST'])
-def create_new_plan():
-    """Create new plan """
+    # Fetch members data based on the search query or fetch all members if no query is provided
+    if query:
+        members = db.execute(
+            "SELECT * FROM members WHERE gym_id = :gym_id AND name LIKE :query",
+            gym_id=user_id,
+            query=f"%{query}%"
+        )
+    else:
+        members = db.execute("SELECT * FROM members WHERE gym_id = :gym_id", gym_id=user_id)
 
-    # Get form data
-    plan_name = request.form['planName']
-    plan_price = int(request.form['planPrice'])
-    plan_days = int(request.form['days'])
-    plan_description = request.form['planDescription']
-
-    # Insertar datos del nuevo plan en la base de datos
-    db.execute("INSERT INTO plans (name, days, price, description, user_id) "
-               "VALUES (:plan_name, :plan_days, :plan_price,  :plan_description, :user_id)",
-                plan_name=plan_name, plan_days=plan_days, plan_price=plan_price,
-                plan_description=plan_description, user_id=session["user_id"])
-
-    # Redirigir al usuario a la página de índice
-    return redirect(url_for('plans'))
-
-
-@app.route('/create_new_routine', methods=['POST'])
-def create_new_routine():
-    """Create new routine """
-
-    # Get form data
-    routine_name = request.form['routineName']
-    routine_description = request.form['routineDescription']
-    pdf_link = 'a'
-
-    # Upload data to database
-    db.execute("INSERT INTO routines (name, description, pdf_link, user_id) "
-            "VALUES (:routine_name, :routine_description, :pdf_link, :user_id)",
-            routine_name=routine_name, routine_description=routine_description, pdf_link=pdf_link, user_id=session["user_id"])
-
-    # Redirigir al usuario a la página de índice
-    return redirect(url_for('routines'))
+    # Render the memberships.html template and pass the data to it
+    return render_template("memberships.html", users=users, plans=plans, routines=routines, members=members, query=query)
 
 
 @app.route('/create_new_membership', methods=['POST'])
@@ -298,31 +224,67 @@ def create_new_membership():
     return redirect(url_for('memberships'))
 
 
-@app.route('/memberships', methods=['GET'])
-def memberships():
-    # Get the user ID from the session
-    user_id = session.get("user_id")
+@app.route('/get_member/<int:member_id>', methods=['GET'])
+def get_member(member_id):
+    """get member data"""
 
-    # Fetch the routines, plans, and users data related to the current user
-    routines = db.execute("SELECT * FROM routines WHERE user_id = :user_id", user_id=user_id)
-    plans = db.execute("SELECT * FROM plans WHERE user_id = :user_id", user_id=user_id)
-    users = db.execute("SELECT * FROM users WHERE id = :id", id=user_id)
+    # Get the member from the database
+    result = db.execute("SELECT * FROM members WHERE id = :member_id", member_id=member_id)
+    member = result[0]
+    if member:
 
-    # Check if there is a search query parameter in the URL
-    query = request.args.get('query', '')
-
-    # Fetch members data based on the search query or fetch all members if no query is provided
-    if query:
-        members = db.execute(
-            "SELECT * FROM members WHERE gym_id = :gym_id AND name LIKE :query",
-            gym_id=user_id,
-            query=f"%{query}%"
-        )
+        # Create a dictionary with the member data
+        member_data = {
+            'id': member['id'],
+            'name': member['name'],
+            'plan_id': member['plan_id'],
+            'routine_id': member['routine_id'],
+            'number': member['emergency_contact'],
+            'description': member['description'],
+            'status': member['status'],
+            'email': member['email']
+        }
+        
+        # Return the member data as a JSON response
+        return jsonify(member_data)
     else:
-        members = db.execute("SELECT * FROM members WHERE gym_id = :gym_id", gym_id=user_id)
+        return jsonify({'error': 'member not found'})
 
-    # Render the memberships.html template and pass the data to it
-    return render_template("memberships.html", users=users, plans=plans, routines=routines, members=members, query=query)
+
+@app.route('/delete_member/<int:member_id>', methods=['POST'])
+def delete_member(member_id):
+    """Delete member"""
+
+    # get element ID
+    member = db.execute("SELECT * FROM members WHERE id = :member_id", member_id=member_id)
+
+    if len(member) == 1:
+        db.execute("DELETE FROM members WHERE id = :member_id", member_id=member_id)
+        
+
+    # Redirect user to members page
+    return redirect(url_for('memberships'))
+
+
+@app.route('/edit_member/<int:member_id>', methods=['GET', 'POST'])
+def edit_member(member_id):
+    """Edit member"""
+    member = db.execute("SELECT * FROM members WHERE id = :member_id", member_id=member_id)
+    if len(member) == 1:
+        # Get the new form data
+        member_name = request.form['editMembershipName']
+        member_plan = request.form['editMembershipPlan']
+        member_routine = request.form['editMembershipRoutine']
+        member_email = request.form['editMembershipEmail']
+        member_number = request.form['editMembershipNumber']
+        member_description = request.form['editMembershipDescription']
+
+    # Update the member data in the database
+    db.execute("UPDATE members SET name = :member_name, plan_id = :member_plan, routine_id = :member_routine, email = :member_email, emergency_contact = :member_number, description = :member_description WHERE id = :member_id",
+            member_name=member_name, member_plan=member_plan, member_routine=member_routine, member_email=member_email, member_number=member_number, member_description=member_description, member_id=member_id)
+        
+    # Redirect user to index page
+    return redirect(url_for('memberships'))
 
 
 @app.route('/routines', methods=['GET'])
@@ -337,6 +299,24 @@ def routines():
     return render_template("routines.html", users=users, routines=routines)
 
 
+@app.route('/create_new_routine', methods=['POST'])
+def create_new_routine():
+    """Create new routine """
+
+    # Get form data
+    routine_name = request.form['routineName']
+    routine_description = request.form['routineDescription']
+    pdf_link = 'a'
+
+    # Upload data to database
+    db.execute("INSERT INTO routines (name, description, pdf_link, user_id) "
+            "VALUES (:routine_name, :routine_description, :pdf_link, :user_id)",
+            routine_name=routine_name, routine_description=routine_description, pdf_link=pdf_link, user_id=session["user_id"])
+
+    # Redirigir al usuario a la página de índice
+    return redirect(url_for('routines'))
+
+
 @app.route('/delete_routine/<int:routine_id>', methods=['POST'])
 def delete_routine(routine_id):
     """Delete routine"""
@@ -348,8 +328,6 @@ def delete_routine(routine_id):
         db.execute("UPDATE members SET routine_id = NULL WHERE routine_id = :routine_id", routine_id=routine_id)
         db.execute("DELETE FROM routines WHERE id = :routine_id", routine_id=routine_id)
         
-        
-
     # Redirect user to plans page
     return redirect(url_for('routines'))
 
@@ -386,11 +364,47 @@ def edit_routine(routine_id):
         routine_description = request.form['editRoutineDescription']
         routine_pdf = request.form['editRoutinePdf']          
 
-        # Update the plan data in the database
+    # Update the plan data in the database
     db.execute("UPDATE routines SET name = :routine_name, description = :routine_description, pdf_link = :routine_pdf  WHERE id = :routine_id",
                    routine_name=routine_name, routine_description=routine_description, routine_pdf=routine_pdf, routine_id=routine_id)
 
     # Redirect user to index page
+    return redirect(url_for('routines'))
+
+
+@app.route('/expenses', methods=['GET'])
+def expenses():
+    """Show expenses"""
+    
+    user_id = session.get("user_id")
+    
+    expenses = db.execute("SELECT * FROM expenses WHERE user_id = :user_id", user_id=user_id)
+    users = db.execute("SELECT * FROM users WHERE id = :id", id=user_id)
+
+    return render_template("expenses.html", users=users, expenses=expenses)
+
+
+@app.route('/create_new_expense', methods=['POST'])
+def create_new_expense():
+    """Create new expense """
+
+    # Get form data
+    expense_name = request.form['expenseName']
+    expense_type = request.form['expenseType']
+    expense_price = request.form['expensePrice']
+
+    # Save date and time
+    current_datetime = datetime.now()
+    formatted_datetime = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
+
+    # Upload data to database
+    db.execute("INSERT INTO expenses (name, type, price, date, user_id) "
+               "VALUES (:expense_name, :expense_type, :expense_price, :formatted_datetime, :user_id)",
+               expense_name=expense_name, expense_type=expense_type, expense_price=expense_price,
+               formatted_datetime=formatted_datetime, user_id=session["user_id"])
+    
+
+    # Redirigir al usuario a la página de índice
     return redirect(url_for('routines'))
 
 
