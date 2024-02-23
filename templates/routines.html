@@ -66,16 +66,19 @@
                     <span class="h2 font-weight-bold mb-0 text-wrap">Descripcion: </span>
                     <span class="text-wrap">{{ routine['description'] }}</span>
                   </div>
-                <button type="button" class="btn btn-outline-primary btn-sm " style="margin-top: auto;" >
-                  <i class="bi bi-file-earmark-pdf-fill"></i>
-                </button>
-                </div>
+                  <a href="{{ url_for('static', filename='uploads/' + routine['pdf_link']) }}" target="_blank">
+                    <button type="button" class="btn btn-outline-primary btn-sm" style="margin-top: auto;">
+                        <i class="bi bi-file-earmark-pdf-fill"></i>
+                    </button>
+                </a>
+                
               </div>
             </div>
           </div>
         </div>
         <!-- End Plans Card -->
       </div>
+    </div>
       {% endfor %}
     </div>
     
@@ -90,7 +93,7 @@
               <h5 class="modal-title" id="createNewRoutineModalLabel">Crear Nueva Rutina</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
-          <form action="/create_new_routine" method="post">
+          <form action="/create_new_routine" method="post" enctype="multipart/form-data">
               <div class="modal-body">
                   <!--Name label-->
                   <div class="mb-3">
@@ -109,9 +112,10 @@
 
                   <!--Pdf uploader label-->
                   <div class="mb-3">
-                      <label for="routinePdf" class="form-label">Rutina:</label>
-                      <input class="form-control bi-file-earmark-pdf-fill" type="file" id="routinePdf">
+                    <label for="routinePdf" class="form-label">Rutina:</label>
+                    <input class="form-control bi-file-earmark-pdf-fill" type="file" id="routinePdf" name="routinePdf" accept=".pdf">
                   </div>
+
               </div>
               <div class="modal-footer">
                   <button type="submit" class="btn btn-primary">Crear</button>
@@ -130,7 +134,7 @@
               <h5 class="modal-title" id="editModalLabel">Editar Rutina</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
-          <form id="editRoutineForm" method="post">
+          <form id="editRoutineForm" method="post" enctype="multipart/form-data">
               <div class="modal-body">
                   <!--Name label-->
                   <div class="mb-3">
@@ -148,11 +152,12 @@
                   </div>
 
                   <!--Pdf uploader label-->
+                  
                   <div class="mb-3">
-                      <label for="editRoutinePdf" class="form-label">Rutina:</label>
-                      <!--Reemplazar por un input type file cuando se resuelva Como subir pdfs-->
-                      <input class="form-control bi-file-earmark-pdf-fill" id="editRoutinePdf" name="editRoutinePdf">
+                    <label for="routinePdf" class="form-label">Rutina:</label>
+                    <input class="form-control bi-file-earmark-pdf-fill" type="file" id="routinePdf" name="routinePdf" accept=".pdf">
                   </div>
+
               </div>
               <div class="modal-footer">
                   <button type="submit" class="btn btn-primary">Editar</button>

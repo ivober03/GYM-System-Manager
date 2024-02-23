@@ -9,13 +9,26 @@ from flask_session import Session
 from datetime import datetime, timedelta
 from werkzeug.security import check_password_hash, generate_password_hash
 from collections import namedtuple
+from werkzeug.utils import secure_filename
+
 
 app = Flask(__name__)
 app.secret_key = 'a1b2c3d4e5f6g7h8i9j0'
 
+
 # Configure CS50 Library to use SQLite database
 db = SQL("sqlite:///manager.db")
 
+# Obtiene la ruta de la carpeta 'static'
+static_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static')
+
+# Crea la carpeta 'uploads' dentro de la carpeta 'static'
+uploads_folder = os.path.join(static_folder, 'uploads')
+if not os.path.exists(uploads_folder):
+    os.makedirs(uploads_folder)
+
+# Configura la ruta de carga para Flask
+app.config['UPLOAD_FOLDER'] = uploads_folder
 
 @app.route('/')
 def home():
@@ -332,14 +345,25 @@ def create_new_routine():
     # Get form data
     routine_name = request.form['routineName']
     routine_description = request.form['routineDescription']
-    pdf_link = 'a'
+    
+    if 'routinePdf' in request.files:
+        pdf_file = request.files['routinePdf']
 
-    # Upload data to database
-    db.execute("INSERT INTO routines (name, description, pdf_link, user_id) "
-            "VALUES (:routine_name, :routine_description, :pdf_link, :user_id)",
-            routine_name=routine_name, routine_description=routine_description, pdf_link=pdf_link, user_id=session["user_id"])
+        # Check if the file has an allowed extension (e.g., PDF)
+        if pdf_file and pdf_file.filename.endswith('.pdf'):
+            # Save the file to the uploads folder
+            pdf_filename = secure_filename(pdf_file.filename)
+            pdf_file.save(os.path.join(app.config['UPLOAD_FOLDER'], pdf_filename))
 
-    # Redirigir al usuario a la página de índice
+        # Upload data to database
+        db.execute("INSERT INTO routines (name, description, pdf_link, user_id) "
+                "VALUES (:routine_name, :routine_description, :pdf_link, :user_id)",
+                routine_name=routine_name, routine_description=routine_description, pdf_link=pdf_filename, user_id=session["user_id"])
+
+        # Redirigir al usuario a la página de índice
+        return redirect(url_for('routines'))
+    
+    flash('Invalid PDF file uploaded.', 'error')
     return redirect(url_for('routines'))
 
 
