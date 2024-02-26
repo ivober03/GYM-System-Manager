@@ -39,7 +39,8 @@ app.config['MAIL_PORT'] = 587  # Use TLS, so set the port to 587
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USE_SSL'] = False
 app.config['MAIL_USERNAME'] = 'noReplyPowerGym@gmail.com'  
-app.config['MAIL_PASSWORD'] = 'VurpinoLopez' 
+app.config['MAIL_PASSWORD'] = 'tpyu dpqb bnjs jpri' 
+app.config['MAIL_DEFAULT_SENDER'] = 'noReplyPowerGym@gmail.com'
 
 mail = Mail(app)
 
@@ -244,7 +245,11 @@ def memberships():
         members = db.execute("SELECT * FROM members WHERE gym_id = :gym_id", gym_id=user_id)
 
     # Ejecute update status function 
+    
     update_status()
+    send_payment_reminders()
+    
+    
 
     # Render the memberships.html template and pass the data to it
     return render_template("memberships.html", users=users, plans=plans, routines=routines, members=members, query=query)
@@ -314,6 +319,7 @@ def delete_member(member_id):
     member = db.execute("SELECT * FROM members WHERE id = :member_id", member_id=member_id)
 
     if len(member) == 1:
+        db.execute("UPDATE payments SET member_id = NULL WHERE member_id = :member_id", member_id=member_id)
         db.execute("DELETE FROM members WHERE id = :member_id", member_id=member_id)
         
 
@@ -596,7 +602,7 @@ def update_status():
         start_date_str = member['start_date']
 
         if paid:
-            start_date = datetime.strptime(start_date_str, '%Y-%m-%d %H:%M:%S')
+            start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
             due_date = start_date + timedelta(days=28)
 
             # Compare dates
@@ -604,9 +610,11 @@ def update_status():
                 db.execute("UPDATE members SET status = :status WHERE id = :member_id", status="Vencido", member_id=member['id'])
             else:
                 db.execute("UPDATE members SET status = :status WHERE id = :member_id", status="Activo", member_id=member['id'])
+                db.execute("UPDATE members SET reminded = :reminded WHERE id = :member_id", reminded = 0, member_id=member['id'] )
         else:
             db.execute("UPDATE members SET status = :status WHERE id = :member_id", status="Pendiente", member_id=member['id'])
     
+
 
 def send_email(to, subject, body):
     msg = Message(subject, recipients=[to])
@@ -616,21 +624,18 @@ def send_email(to, subject, body):
 
 def send_payment_reminders():
     # Obtén los miembros que aún no han pagado la cuota
-    unpaid_members = db.execute("SELECT id, name, email FROM members WHERE status = 'pendiente'")
+    unpaid_members = db.execute("SELECT * FROM members WHERE status = 'Pendiente'")
 
     for member in unpaid_members:
-        # Enviar correo electrónico de recordatorio
-        send_email(member['email'], 'Recordatorio de pago', f'Hola {member["name"]}, recuerda que debes pagar la cuota del mes.')
+        if 'reminded' in member and member['reminded'] == 0:
+            # Enviar correo electrónico de recordatorio
+            send_email(member['email'], 'Recordatorio de pago', f'Hola {member["name"]}, recuerda que debes pagar la cuota del mes.')
 
-        # Marcar el pago como recordado (puedes agregar una columna 'reminded' en tu tabla members)
-        db.execute("UPDATE members SET reminded = 1 WHERE id = :member_id", member_id=member['id'])
+            # Marcar el pago como recordado 
+            db.execute("UPDATE members SET reminded = :reminded WHERE id = :member_id",reminded = 1, member_id=member['id'])
 
-# Configura una tarea programada para ejecutar la función cada día a una hora específica (puedes ajustar esto según tus necesidades)
-schedule.every().day.at("08:00").do(send_payment_reminders)
+
+
     
-
-
-
-
 if __name__ == '__main__':
     app.run()
