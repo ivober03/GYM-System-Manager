@@ -15,7 +15,7 @@
         <div style="display: inline-block;margin-bottom:10px;margin-top:14px;">
           <div class="btn-group">
             <button class="btn btn-primary ms-auto mr-2" type="button" style="white-space: nowrap;"  aria-haspopup="true" aria-expanded="false" data-bs-toggle="modal" data-bs-target="#createNewPaymentModal">
-            <i class="bi bi-plus-lg "></i>   Ingresar Pagos
+            <i class="bi bi-plus-lg "></i>   Registrar Pago
             </button>
           </div>
         </div>
@@ -34,13 +34,15 @@
       </div>
     </form>
     
-    <table class="table table-striped">
+    <div class="table-responsive" style="border-radius: 10px; overflow: hidden;">
+    <table class="table table-hover">
       <thead style="vertical-align: middle;">
         <tr>
           <th scope="col">Nombre</th>
           <th scope="col">Forma de pago</th>
+          <th scope="col">Monto</th>
           <th scope="col">Fecha de pago</th>
-          <th scope="col"></th>
+          <th></th>
         </tr>
       </thead>
       <tbody style="vertical-align: middle;" >
@@ -56,10 +58,18 @@
           </td>
           
           <td>{{payment.type}}</td>
+          <td>
+          {% for member in members %}
+            {% if payment['member_id'] == member['id'] %}
+              {% for plan in plans %}
+                {% if member['plan_id'] == plan['id'] %}
+                 $ {{plan.price}} 
+                {% endif %}
+              {% endfor %}
+            {% endif %}
+          {% endfor %}            
+          </td>
           <td>{{payment.date}}</td>
-          
-
-        
           <td style="padding-top: 10px;"> <!-- Actions column -->
             <form action="/delete_payment/{{ payment['id'] }}" method="post" style="display: inline-block;">
                 <button type="submit" class="btn btn-outline-danger btn-sm" style="background-color: transparent;  vertical-align: middle;" onclick="return confirm('Una vez borrado no se podrán recuperar los datos del pago. ¿Desea borrarlo sabiendo esto?')">
@@ -71,7 +81,8 @@
         {% endfor %}
       </tbody>
     </table>
-    
+  </div>
+
   </div>
 </section>
 
@@ -107,7 +118,7 @@
             <div class="input-group">
               <select name="paymentType" id="paymentType" class="form-select">
                 <option value="Efectivo">Efectivo</option>
-                <option value="Transference">Transferencia</option>
+                <option value="Transferencia">Transferencia</option>
                 <option value="Tarjeta">Tarjeta</option>
               </select>
             </div>  

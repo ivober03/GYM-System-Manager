@@ -58,21 +58,22 @@ def plans():
     # Select plans and user data
 
     plans = db.execute("SELECT * FROM plans WHERE user_id = :id", id=session["user_id"])
-    user = db.execute("SELECT * FROM users WHERE id = :user_id", user_id=session["user_id"])
+    users = db.execute("SELECT * FROM users WHERE id = :user_id", user_id=session["user_id"])
     
-    return render_template("plans.html", user=user, plans=plans)
+    return render_template("plans.html", users=users, plans=plans)
 
 @app.route('/payments', methods=['GET'])
 def payments():
     """Show plans"""
 
-    # Select plans and user data
+    # Select plans, members, payments and user data
 
     payments = db.execute("SELECT * FROM payments WHERE gym_id = :id", id=session["user_id"])
     members = db.execute("SELECT * FROM members WHERE gym_id = :id", id=session["user_id"])
-    user = db.execute("SELECT * FROM users WHERE id = :user_id", user_id=session["user_id"])
+    users = db.execute("SELECT * FROM users WHERE id = :user_id", user_id=session["user_id"])
+    plans = db.execute("SELECT * FROM plans WHERE user_id = :id", id=session["user_id"])
     
-    return render_template("payments.html", user=user, payments=payments, members = members)
+    return render_template("payments.html", users=users, payments=payments, members = members, plans= plans)
 
 @app.route('/create_new_payment', methods=['POST'])
 def create_new_payment():
@@ -93,6 +94,9 @@ def create_new_payment():
     # Return to memberships page
     return redirect(url_for('payments'))
 
+
+
+
 @app.route('/delete_payment/<int:payment_id>', methods=['POST'])
 def delete_payment(payment_id):
     """Delete payment"""
@@ -107,6 +111,27 @@ def delete_payment(payment_id):
     # Redirect user to members page
     return redirect(url_for('payments'))
     
+
+@app.route('/create_new_plan', methods=['POST'])
+def create_new_plan():
+    """Create new plan """
+
+    # Get form data
+    plan_name = request.form['planName']
+    plan_price = int(request.form['planPrice'])
+    plan_days = int(request.form['days'])
+    plan_description = request.form['planDescription']
+
+    # Insertar datos del nuevo plan en la base de datos
+    db.execute("INSERT INTO plans (name, days, price, description, user_id) "
+               "VALUES (:plan_name, :plan_days, :plan_price,  :plan_description, :user_id)",
+                plan_name=plan_name, plan_days=plan_days, plan_price=plan_price,
+                plan_description=plan_description, user_id=session["user_id"])
+
+    # Redirigir al usuario a la página de índice
+    return redirect(url_for('plans'))
+
+
 
 
 @app.route('/delete_plan/<int:plan_id>', methods=['POST'])
@@ -177,6 +202,7 @@ def memberships():
     routines = db.execute("SELECT * FROM routines WHERE user_id = :user_id", user_id=user_id)
     plans = db.execute("SELECT * FROM plans WHERE user_id = :user_id", user_id=user_id)
     users = db.execute("SELECT * FROM users WHERE id = :id", id=user_id)
+
 
     # Check if there is a search query parameter in the URL
     query = request.args.get('query', '')
