@@ -6,9 +6,6 @@ jinja2==3.0.1
 Flask-SQLAlchemy
 requests==2.27.1
 Werkzeug==2.2.2
-<<<<<<< HEAD
 Flask-Mail==0.9.1
 schedule==1.2.1
-=======
 apscheduler==3.10.4
->>>>>>> 092f9e87a32b7a4d2eb95bb509ccbf7d2caf4745
