@@ -201,7 +201,7 @@ def edit_plan(plan_id):
         plan_price = request.form['editPlanPrice']
         plan_description = request.form['editPlanDescription']          
 
-        # Update the plan data in the database
+    # Update the plan data in the database
     db.execute("UPDATE plans SET name = :plan_name, days = :plan_days, price = :plan_price, description = :plan_description WHERE id = :plan_id",
                    plan_name=plan_name, plan_days=plan_days, plan_price=plan_price, plan_description=plan_description, plan_id=plan_id)
 
@@ -233,6 +233,9 @@ def memberships():
     else:
         members = db.execute("SELECT * FROM members WHERE gym_id = :gym_id", gym_id=user_id)
 
+    # Ejecute update status function 
+    update_status()
+
     # Render the memberships.html template and pass the data to it
     return render_template("memberships.html", users=users, plans=plans, routines=routines, members=members, query=query)
 
@@ -253,7 +256,7 @@ def create_new_membership():
     
     # Save date and time
     current_datetime = datetime.now()
-    formatted_datetime = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
+    formatted_datetime = current_datetime.strftime("%Y-%m-%d")
     
     # Upload data to database
     db.execute("INSERT INTO members (name, gym_id, plan_id, routine_id, email, start_date, gender, emergency_contact) "
@@ -558,5 +561,44 @@ def dashboard():
         return redirect(url_for('login'))
 
 
+def update_status():
+    """ Update member status"""
+
+    # Get actual date
+    actual_date=datetime.now()
+
+    # Get all members
+    members = db.execute("SELECT * FROM members WHERE gym_id = :user_id", user_id=session["user_id"])
+
+    for member in members:
+        # Get payment for member
+        result = db.execute("SELECT * FROM payments WHERE member_id = :member_id", member_id=member['id'])
+        paid = False
+
+        if result:
+            payment = result[0]
+        
+            # Check if the member has made a payment
+            if payment['date']:
+                paid = True
+
+        # Get start date
+        start_date_str = member['start_date']
+
+        if paid:
+            start_date = datetime.strptime(start_date_str, '%Y-%m-%d %H:%M:%S')
+            due_date = start_date + timedelta(days=28)
+
+            # Compare dates
+            if due_date <= actual_date:
+                db.execute("UPDATE members SET status = :status WHERE id = :member_id", status="Vencido", member_id=member['id'])
+            else:
+                db.execute("UPDATE members SET status = :status WHERE id = :member_id", status="Activo", member_id=member['id'])
+        else:
+            db.execute("UPDATE members SET status = :status WHERE id = :member_id", status="Pendiente", member_id=member['id'])
+
+        
 if __name__ == '__main__':
+
+
     app.run()

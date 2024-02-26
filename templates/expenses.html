@@ -51,7 +51,7 @@
         <tr>
           <td>{{ expense['name'] }}</td>
           <td> {{ expense['type'] }}</td>
-          <td>{{ expense['price'] }}</td>
+          <td>$ {{ expense['price'] }}</td>
           <td>{{ expense['date'] }}</td>        
           <td style="padding-top: 10px;"> <!-- Actions column -->
             <form action="/delete_expense/{{ expense['id'] }}" method="post" style="display: inline-block;">
