@@ -1,2 +1,3 @@
 venv
-
+manager.db
+static/uploads

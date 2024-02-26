@@ -9,13 +9,26 @@ from flask_session import Session
 from datetime import datetime, timedelta
 from werkzeug.security import check_password_hash, generate_password_hash
 from collections import namedtuple
+from werkzeug.utils import secure_filename
+
 
 app = Flask(__name__)
 app.secret_key = 'a1b2c3d4e5f6g7h8i9j0'
 
+
 # Configure CS50 Library to use SQLite database
 db = SQL("sqlite:///manager.db")
 
+# Obtiene la ruta de la carpeta 'static'
+static_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static')
+
+# Crea la carpeta 'uploads' dentro de la carpeta 'static'
+uploads_folder = os.path.join(static_folder, 'uploads')
+if not os.path.exists(uploads_folder):
+    os.makedirs(uploads_folder)
+
+# Configura la ruta de carga para Flask
+app.config['UPLOAD_FOLDER'] = uploads_folder
 
 @app.route('/')
 def home():
@@ -185,7 +198,7 @@ def edit_plan(plan_id):
         plan_price = request.form['editPlanPrice']
         plan_description = request.form['editPlanDescription']          
 
-        # Update the plan data in the database
+    # Update the plan data in the database
     db.execute("UPDATE plans SET name = :plan_name, days = :plan_days, price = :plan_price, description = :plan_description WHERE id = :plan_id",
                    plan_name=plan_name, plan_days=plan_days, plan_price=plan_price, plan_description=plan_description, plan_id=plan_id)
 
@@ -217,6 +230,9 @@ def memberships():
     else:
         members = db.execute("SELECT * FROM members WHERE gym_id = :gym_id", gym_id=user_id)
 
+    # Ejecute update status function 
+    update_status()
+
     # Render the memberships.html template and pass the data to it
     return render_template("memberships.html", users=users, plans=plans, routines=routines, members=members, query=query)
 
@@ -237,7 +253,7 @@ def create_new_membership():
     
     # Save date and time
     current_datetime = datetime.now()
-    formatted_datetime = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
+    formatted_datetime = current_datetime.strftime("%Y-%m-%d")
     
     # Upload data to database
     db.execute("INSERT INTO members (name, gym_id, plan_id, routine_id, email, start_date, gender, emergency_contact) "
@@ -332,14 +348,25 @@ def create_new_routine():
     # Get form data
     routine_name = request.form['routineName']
     routine_description = request.form['routineDescription']
-    pdf_link = 'a'
+    
+    if 'routinePdf' in request.files:
+        pdf_file = request.files['routinePdf']
 
-    # Upload data to database
-    db.execute("INSERT INTO routines (name, description, pdf_link, user_id) "
-            "VALUES (:routine_name, :routine_description, :pdf_link, :user_id)",
-            routine_name=routine_name, routine_description=routine_description, pdf_link=pdf_link, user_id=session["user_id"])
+        # Check if the file has an allowed extension (e.g., PDF)
+        if pdf_file and pdf_file.filename.endswith('.pdf'):
+            # Save the file to the uploads folder
+            pdf_filename = secure_filename(pdf_file.filename)
+            pdf_file.save(os.path.join(app.config['UPLOAD_FOLDER'], pdf_filename))
 
-    # Redirigir al usuario a la página de índice
+        # Upload data to database
+        db.execute("INSERT INTO routines (name, description, pdf_link, user_id) "
+                "VALUES (:routine_name, :routine_description, :pdf_link, :user_id)",
+                routine_name=routine_name, routine_description=routine_description, pdf_link=pdf_filename, user_id=session["user_id"])
+
+        # Redirigir al usuario a la página de índice
+        return redirect(url_for('routines'))
+    
+    flash('Invalid PDF file uploaded.', 'error')
     return redirect(url_for('routines'))
 
 
@@ -531,5 +558,44 @@ def dashboard():
         return redirect(url_for('login'))
 
 
+def update_status():
+    """ Update member status"""
+
+    # Get actual date
+    actual_date=datetime.now()
+
+    # Get all members
+    members = db.execute("SELECT * FROM members WHERE gym_id = :user_id", user_id=session["user_id"])
+
+    for member in members:
+        # Get payment for member
+        result = db.execute("SELECT * FROM payments WHERE member_id = :member_id", member_id=member['id'])
+        paid = False
+
+        if result:
+            payment = result[0]
+        
+            # Check if the member has made a payment
+            if payment['date']:
+                paid = True
+
+        # Get start date
+        start_date_str = member['start_date']
+
+        if paid:
+            start_date = datetime.strptime(start_date_str, '%Y-%m-%d %H:%M:%S')
+            due_date = start_date + timedelta(days=28)
+
+            # Compare dates
+            if due_date <= actual_date:
+                db.execute("UPDATE members SET status = :status WHERE id = :member_id", status="Vencido", member_id=member['id'])
+            else:
+                db.execute("UPDATE members SET status = :status WHERE id = :member_id", status="Activo", member_id=member['id'])
+        else:
+            db.execute("UPDATE members SET status = :status WHERE id = :member_id", status="Pendiente", member_id=member['id'])
+
+        
 if __name__ == '__main__':
+
+
     app.run()
