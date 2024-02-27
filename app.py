@@ -623,15 +623,15 @@ def send_email(to, subject, body):
     
 
 def send_payment_reminders():
-    # Obtén los miembros que aún no han pagado la cuota
-    unpaid_members = db.execute("SELECT * FROM members WHERE status = 'Pendiente'")
+    # Get members that have not payed the cuote
+    unpaid_members = db.execute("SELECT * FROM members WHERE status = 'Vencido'")
 
     for member in unpaid_members:
         if 'reminded' in member and member['reminded'] == 0:
-            # Enviar correo electrónico de recordatorio
+            # Send email
             send_email(member['email'], 'Recordatorio de pago', f'Hola {member["name"]}, recuerda que debes pagar la cuota del mes.')
 
-            # Marcar el pago como recordado 
+            # Mark as reminded
             db.execute("UPDATE members SET reminded = :reminded WHERE id = :member_id",reminded = 1, member_id=member['id'])
 
 
