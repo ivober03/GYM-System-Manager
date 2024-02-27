@@ -51,6 +51,8 @@ h6 {
   #main {
     padding: 12px;
   }
+
+
 }
 
 /*--------------------------------------------------------------
@@ -111,20 +113,21 @@ h6 {
   color: #000000;
 }
 
-
-@media (min-width: 768px) {
-  .dropdown-menu-arrow::before {
-    content: "";
-    width: 13px;
-    height: 13px;
-    background: #fff;
-    position: absolute;
-    top: -7px;
-    right: 20px;
-    transform: rotate(45deg);
-    border-top: 1px solid #eaedf1;
-    border-left: 1px solid #eaedf1;
+.dropdown-menu-arrow::before {
+  content: "";
+  width: 13px;
+  height: 13px;
+  background: #fff;
+  position: absolute;
+  top: -7px;
+  right: 20px;
+  transform: rotate(45deg);
+  border-top: 1px solid #eaedf1;
+  border-left: 1px solid #eaedf1;
   }
+
+.d-md-block {
+  display: block !important;
 }
 
 .dropdown-menu .dropdown-header,
@@ -250,6 +253,20 @@ h6 {
   .card-title{
     font-size:16px;
   }
+
+  .pagetitle h1{
+    font-size: 24px;
+  }
+
+  .btn-primary{
+    font-size: 12px;
+  }
+
+  .table{
+   display: block !important;
+   overflow-x: auto !important;
+   width: 100% !important;
+ }
 }
 
 .card-title span {
@@ -387,6 +404,7 @@ h6 {
   .logo {
     width: 280px;
   }
+
 }
 
 .logo img {
@@ -647,6 +665,10 @@ h6 {
 @media (max-width: 1199px) {
   .toggle-sidebar .sidebar {
     left: 0;
+  }
+
+  .mb-4{
+    margin-bottom: 0.5rem !important;
   }
 }
 
@@ -927,6 +949,7 @@ h6 {
   color: #777777;
   margin-left: 95px;
 }
+
 
 /* Recent Sales */
 .dashboard .recent-sales {

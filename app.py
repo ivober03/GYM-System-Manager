@@ -248,8 +248,6 @@ def memberships():
     
     update_status()
     send_payment_reminders()
-    
-    
 
     # Render the memberships.html template and pass the data to it
     return render_template("memberships.html", users=users, plans=plans, routines=routines, members=members, query=query)
@@ -272,7 +270,14 @@ def create_new_membership():
     # Save date and time
     current_datetime = datetime.now()
     formatted_datetime = current_datetime.strftime("%Y-%m-%d")
-    
+            
+    if m_plan_id == 0: 
+        m_plan_id = None
+
+    if m_routine_id == 0:
+        m_routine_id = None
+
+
     # Upload data to database
     db.execute("INSERT INTO members (name, gym_id, plan_id, routine_id, email, start_date, gender, emergency_contact) "
            "VALUES (:m_name, :user_id, :m_plan_id, :m_routine_id, :m_email, :formatted_datetime, :m_gender, :m_emergency_number)",
@@ -362,12 +367,13 @@ def routines():
 
 @app.route('/create_new_routine', methods=['POST'])
 def create_new_routine():
-    """Create new routine """
+    """Create new routine"""
 
     # Get form data
     routine_name = request.form['routineName']
     routine_description = request.form['routineDescription']
-    
+    pdf_filename = ''
+
     if 'routinePdf' in request.files:
         pdf_file = request.files['routinePdf']
 
@@ -377,16 +383,16 @@ def create_new_routine():
             pdf_filename = secure_filename(pdf_file.filename)
             pdf_file.save(os.path.join(app.config['UPLOAD_FOLDER'], pdf_filename))
 
-        # Upload data to database
-        db.execute("INSERT INTO routines (name, description, pdf_link, user_id) "
-                "VALUES (:routine_name, :routine_description, :pdf_link, :user_id)",
-                routine_name=routine_name, routine_description=routine_description, pdf_link=pdf_filename, user_id=session["user_id"])
+    # Upload data to database
+    db.execute("INSERT INTO routines (name, description, pdf_link, user_id) "
+               "VALUES (:routine_name, :routine_description, :pdf_link, :user_id)",
+               routine_name=routine_name, routine_description=routine_description, pdf_link=pdf_filename,
+               user_id=session["user_id"])
 
-        # Redirigir al usuario a la página de índice
-        return redirect(url_for('routines'))
-    
-    flash('Invalid PDF file uploaded.', 'error')
+    # Redirigir al usuario a la página de índice
     return redirect(url_for('routines'))
+
+
 
 
 @app.route('/delete_routine/<int:routine_id>', methods=['POST'])
@@ -623,15 +629,16 @@ def send_email(to, subject, body):
     
 
 def send_payment_reminders():
-    # Obtén los miembros que aún no han pagado la cuota
-    unpaid_members = db.execute("SELECT * FROM members WHERE status = 'Pendiente'")
+    # Get members that have not payed the cuote
+    unpaid_members = db.execute("SELECT * FROM members WHERE status = 'Vencido'")
 
     for member in unpaid_members:
         if 'reminded' in member and member['reminded'] == 0:
-            # Enviar correo electrónico de recordatorio
-            send_email(member['email'], 'Recordatorio de pago', f'Hola {member["name"]}, recuerda que debes pagar la cuota del mes.')
+            # Send email
+            if member['email'] != None:
+                send_email(member['email'], 'Recordatorio de pago', f'Hola {member["name"]}, recuerda que debes pagar la cuota del mes.')
 
-            # Marcar el pago como recordado 
+            # Mark as reminded
             db.execute("UPDATE members SET reminded = :reminded WHERE id = :member_id",reminded = 1, member_id=member['id'])
 
     

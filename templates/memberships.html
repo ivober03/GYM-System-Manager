@@ -34,62 +34,63 @@
       </div>
     </form>
     
-    <div class="table-responsive" style="border-radius: 10px; overflow: hidden;">
-    <table class="table table-hover">
-      <thead style="vertical-align: middle;">
-        <tr>
-          <th scope="col">Nombre</th>
-          <th scope="col">Plan</th>
-          <th scope="col">Rutina</th>
-          <th scope="col">Estado</th>
-          <th scope="col">Gmail</th>
-          <th scope="col">Número</th>
-          <th scope="col">Fecha de inicio</th>
-          <th scope="col"></th> <!-- New column for buttons -->
-          <th scope="col"></th> <!-- New column for buttons -->
+    <div class="table-responsive-sm" style="border-radius: 10px; overflow: hidden;">
+      <table class="table table-hover">
+        <thead style="vertical-align: middle;">
+          <tr>
+            <th scope="col">Nombre</th>
+            <th scope="col">Plan</th>
+            <th scope="col">Rutina</th>
+            <th scope="col">Estado</th>
+            <th scope="col">Gmail</th>
+            <th scope="col">Número</th>
+            <th scope="col">Fecha de inicio</th>
+            <th scope="col"></th> <!-- New column for buttons -->
+            <th scope="col"></th> <!-- New column for buttons -->
 
+          </tr>
+        </thead>
+        <tbody style="vertical-align: middle;" >
+          {% for member in members %}
+          <tr>
+            <td>{{ member['name'] }}</td>
+            <td>
+              {% for plan in plans %}
+                {% if member['plan_id'] == plan['id'] %}
+                  {{plan.name}}
+                {% endif %}
+              {% endfor %}
+            </td>
+            <td>
+              {% for routine in routines %}
+                {% if member['routine_id'] == routine['id'] %}
+                  {{routine.name}}
+                {% endif %}
+              {% endfor %}
+            </td>
+            <td>{{member.status}}</td>
+            <td>{{member.email}}</td>
+            <td>{{member.emergency_contact}}</td>
+            <td>{{member.start_date}}</td>
+
+            <td style="padding-top: 10px;"> <!-- Actions column -->
+              <button class="edit-member-btn btn btn-outline-primary btn-sm" style="background-color: transparent;  vertical-align: middle;" type="button" data-bs-target="#editMemberModal" data-bs-toggle="modal" data-member-id="{{member['id']}}" aria-haspopup="true" aria-expanded="false" >
+                <i class="bi bi-pencil" style="font-size: 1em; color: blue;"></i> <!-- Edit icon -->
+              </button>
+            </td>
+          
+            <td style="padding-top: 10px;"> <!-- Actions column -->
+              <form action="/delete_member/{{ member['id'] }}" method="post" style="display: inline-block;">
+                  <button type="submit" class="btn btn-outline-danger btn-sm" style="background-color: transparent;  vertical-align: middle;" onclick="return confirm('Una vez borrado no se podrán recuperar los datos del miembro. ¿Desea borrarlo sabiendo esto?')">
+                      <i class="bi bi-trash" style="font-size: 1.1em; color: red;"></i> <!-- Delete icon -->
+                  </button> <!-- Delete button -->
+              </form>
+          </td>
         </tr>
-      </thead>
-      <tbody style="vertical-align: middle;" >
-        {% for member in members %}
-        <tr>
-          <td>{{ member['name'] }}</td>
-          <td>
-            {% for plan in plans %}
-              {% if member['plan_id'] == plan['id'] %}
-                {{plan.name}}
-              {% endif %}
-            {% endfor %}
-          </td>
-          <td>
-            {% for routine in routines %}
-              {% if member['routine_id'] == routine['id'] %}
-                {{routine.name}}
-              {% endif %}
-            {% endfor %}
-          </td>
-          <td>{{member.status}}</td>
-          <td>{{member.email}}</td>
-          <td>{{member.emergency_contact}}</td>
-          <td>{{member.start_date}}</td>
-
-          <td style="padding-top: 10px;"> <!-- Actions column -->
-            <button class="edit-member-btn btn btn-outline-primary btn-sm" style="background-color: transparent;  vertical-align: middle;" type="button" data-bs-target="#editMemberModal" data-bs-toggle="modal" data-member-id="{{member['id']}}" aria-haspopup="true" aria-expanded="false" >
-              <i class="bi bi-pencil" style="font-size: 1em; color: blue;"></i> <!-- Edit icon -->
-            </button>
-          </td>
-        
-          <td style="padding-top: 10px;"> <!-- Actions column -->
-            <form action="/delete_member/{{ member['id'] }}" method="post" style="display: inline-block;">
-                <button type="submit" class="btn btn-outline-danger btn-sm" style="background-color: transparent;  vertical-align: middle;" onclick="return confirm('Una vez borrado no se podrán recuperar los datos del miembro. ¿Desea borrarlo sabiendo esto?')">
-                    <i class="bi bi-trash" style="font-size: 1.1em; color: red;"></i> <!-- Delete icon -->
-                </button> <!-- Delete button -->
-            </form>
-        </td>
-      </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
   </div>
   </div>
 </section>
@@ -139,6 +140,7 @@
               <label for="membershipPlan" class="form-label">Plan:</label>
               <div class="input-group">
                 <select class="form-select" id="membershipPlan" name="membershipPlan">
+                  <option value="0">Sin determinar</option>
                   {% for plan in plans %}
                   <option value="{{ plan['id'] }}">{{ plan['name'] }}</option>
                   {% endfor %}
@@ -150,6 +152,7 @@
               <label for="days" class="form-label">Rutina:</label>
               <select class="form-select" id="membershiRoutine" name="membershipRoutine">
                   <!-- Implementar for recorriendo la base de datos y agregando las opciones -->
+                  <option value="0">Sin determinar</option>
                   {% for routine in routines %}
                   <option value="{{ routine['id'] }}">{{ routine['name'] }}</option>
                   {% endfor %}
