@@ -1,0 +1,144 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  payments
+{% endblock %}
+
+{% block main %}
+<div class="pagetitle">
+
+
+
+  <div class="d-flex align-items-center mb-3">
+  <h1 style="margin-top:10px; width:100%">Pagos:</h1>
+      <div class="" style="display: inline-block;">
+        <div style="display: inline-block;margin-bottom:10px;margin-top:14px;">
+          <div class="btn-group">
+            <button class="btn btn-primary ms-auto mr-2" type="button" style="white-space: nowrap;"  aria-haspopup="true" aria-expanded="false" data-bs-toggle="modal" data-bs-target="#createNewPaymentModal">
+            <i class="bi bi-plus-lg "></i>   Registrar Pago
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+    
+
+<section class="section dashboard">
+
+  <div class="col-lg-12">
+    <form action="{{ url_for('payments') }}" method="GET" class="mb-3">
+      <div class="input-group">
+        <input type="text" name="query" class="form-control" placeholder="Buscar Pago por nombre" value="{{query}}">
+        <button type="submit" class="btn btn-primary">Buscar</button>
+      </div>
+    </form>
+    
+    <div class="table-responsive" style="border-radius: 10px; overflow: hidden;">
+    <table class="table table-hover">
+      <thead style="vertical-align: middle;">
+        <tr>
+          <th scope="col">Nombre</th>
+          <th scope="col">Forma de pago</th>
+          <th scope="col">Monto</th>
+          <th scope="col">Fecha de pago</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody style="vertical-align: middle;" >
+        {% for payment in payments %}
+        <tr>
+          
+          <td>
+            {% for member in members %}
+              {% if payment['member_id'] == member['id'] %}
+                {{member.name}}
+                {% endif %}
+            {% endfor %}
+          </td>
+          
+          <td>{{payment.type}}</td>
+          <td>
+          {% for member in members %}
+            {% if payment['member_id'] == member['id'] %}
+              {% for plan in plans %}
+                {% if member['plan_id'] == plan['id'] %}
+                 $ {{plan.price}} 
+                {% endif %}
+              {% endfor %}
+            {% endif %}
+          {% endfor %}            
+          </td>
+          <td>{{payment.date}}</td>
+          <td style="padding-top: 10px;"> <!-- Actions column -->
+            <form action="/delete_payment/{{ payment['id'] }}" method="post" style="display: inline-block;">
+                <button type="submit" class="btn btn-outline-danger btn-sm" style="background-color: transparent;  vertical-align: middle;" onclick="return confirm('Una vez borrado no se podrán recuperar los datos del pago. ¿Desea borrarlo sabiendo esto?')">
+                    <i class="bi bi-trash" style="font-size: 1.1em; color: red;"></i> <!-- Delete icon -->
+                </button> <!-- Delete button -->
+            </form>
+        </td>
+      </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  </div>
+</section>
+
+<!--Create Payment Modal-->
+<div class="modal fade" id="createNewPaymentModal" tabindex="-1" aria-labelledby="createNewPaymentModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-md">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="createNewPayementModalLabel">Agregar Nuevo pago</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body">
+        <form action="/create_new_payment" method="post" >
+
+          <!--Member label-->
+          <div class="mb-3">
+            <label for="paymentMemberName" class="form-label">Miembro:</label>
+              <div class="input-group">
+                <!--Implementar busqueda en la seleccion del miembro-->
+                <select class="form-select" id="paymentMemberName" name="paymentMemberName">
+                  {% for member in members %}
+                  <option value="{{ member['id'] }}">{{ member['name'] }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+          
+
+          <!--Type label-->
+          <div class="mb-3 row">
+            <label for="paymentType" class="form-label">Forma de pago:</label>
+            <div class="input-group">
+              <select name="paymentType" id="paymentType" class="form-select">
+                <option value="Efectivo">Efectivo</option>
+                <option value="Transferencia">Transferencia</option>
+                <option value="Tarjeta">Tarjeta</option>
+              </select>
+            </div>  
+          </div>
+
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">Ingresar</button>
+            </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+{% endblock %}
+

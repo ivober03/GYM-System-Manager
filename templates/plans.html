@@ -1,0 +1,186 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Plans
+{% endblock %}
+
+{% block main %}
+
+
+<div class="pagetitle">
+
+
+
+  <div class="d-flex align-items-center ">
+  <h1 style="margin-top:10px; width:100%">Planes:</h1>
+      <div class="" style="display: inline-block;">
+        <div style="display: inline-block;margin-bottom:10px;margin-top:14px;">
+          <div class="btn-group">
+            <button class="btn btn-primary ms-auto mr-2" type="button" style="white-space: nowrap;"  aria-haspopup="true" aria-expanded="false" data-bs-toggle="modal" data-bs-target="#createNewPlanModal">
+            <i class="bi bi-plus-lg "></i>   Crear Plan
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+    
+    
+<section class="section dashboard">
+
+  <div class="col-lg-12">
+    <!-- Start row -->
+    <div class="row">
+      {% for plan in plans %}
+      <div class="col-xl-4 col-lg-4 mb-4">
+        <!-- Start Plans Card -->
+        <div class="card card-stats mb-4 mb-xl-0 h-100">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-10">
+                <h5 class="card-title-2 text-muted mb-0" style="line-height: 1.2 !important;">{{ plan['name']}}:</h5>
+              </div>
+              <div class="col-2 text-right">
+                <div class="dropdown">
+                  <a class="icon" href="#" data-bs-toggle="dropdown">
+                    <i class="bi bi-three-dots-vertical" style="font-size: 1.3rem !important; margin-top: 2px;"></i>
+                  </a>
+                  <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                    <li>
+                      <button class="dropdown-item edit-plan-btn" type="button" data-bs-target="#editPlanModal" data-bs-toggle="modal" data-plan-id="{{plan['id']}}" aria-haspopup="true" aria-expanded="false">
+                      <i class="bi bi-pencil"></i> Edit
+                      </button>
+                    </li>
+                    <li>
+                      <form action="/delete_plan/{{ plan['id'] }}" method="POST">
+                        <button type="submit" class="dropdown-item" onclick="return confirm('Confirmar borrar plan:')">
+                          <i class="bi bi-trash"></i> Borrar</button>
+                      </form>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <hr style="margin-top: 0px;">
+            <div class="row">
+              <div class="col-6">
+                <span class="h2 font-weight mb-0 ">Precio: $</span>
+                <span class="text-nowrap mb-0">{{ plan['price'] }}</span>
+              </div>
+              <div class="col-6">
+                <span class="h2 font-weight-bold mb-0">Dias: </span>
+                <span class="text-nowrap mb-0">{{ plan['days'] }}</span>
+              </div>
+              <div class="col-12 mt-3">
+                <span class="h2 font-weight-bold mb-0">Descripcion: </span>
+                <span class="text-wrap">{{ plan['description'] }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- End Plans Card -->
+      </div>
+      {% endfor %}
+    </div>
+    
+</section>
+
+<!-- Create plan modal section-->
+<div class="modal fade" id="createNewPlanModal" tabindex="-1" aria-labelledby="createNewPlanModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-md">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="createNewPlanModalLabel">Crear Nuevo Plan</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="/create_new_plan" method="post" >
+          <!--Name label-->
+          <div class="mb-3">
+            <label for="planName" class="form-label">Nombre:</label>
+            <div class="input-group">
+              <input type="text" class="form-control" name="planName" id="planName" placeholder="Ingrese el nombre del plan">
+            </div>
+          </div>
+          <!--Price label-->
+          <div class="mb-3 row">
+            <div class="col-6">
+              <label for="planPrice" class="form-label">Precio:</label>
+              <div class="input-group">
+                <span class="input-group-text">$</span>
+                <input type="number" class="form-control"  id="planPrice" name="planPrice" placeholder="Ingrese Precio" min="1" value="1">
+              </div>
+            </div>
+            <!--Days label-->
+            <div class="col-6">
+              <label for="days" class="form-label">Dias:</label>
+              <input type="number" class="form-control"  id="days" name="days" placeholder="Ingrese Dias" min="1" value="1">
+            </div>
+          </div>
+          
+          <!--Description label-->
+            <div class="mb-3">
+              <label for="planDescription" class="form-label">Descripción:</label>
+              <textarea class="form-control" id="planDescription" name="planDescription" placeholder="Ingrese una Descripcion"></textarea>
+            </div>
+            <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">Crear</button>
+          </form>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+
+<!-- Edit plan modal section-->
+<div class="modal fade" id="editPlanModal" tabindex="-1" aria-labelledby="editplanModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-md">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editModalLabel">Editar Plan</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="editPlanForm" method="post">
+          <!--Name label-->
+          <div class="mb-3">
+            <label for="editPlanName" class="form-label">Nombre:</label>
+            <div class="input-group">
+              <input type="text" class="form-control" name="editPlanName" id="editPlanName" placeholder="">
+            </div>
+          </div>
+          <!--Price label-->
+          <div class="mb-3 row">
+            <div class="col-6">
+              <label for="editPlanPrice" class="form-label">Precio:</label>
+              <div class="input-group">
+                <span class="input-group-text">$</span>
+                <input type="number" class="form-control" id="editPlanPrice" name="editPlanPrice" placeholder="" min="1" value="">
+              </div>
+            </div>
+            <!--Days label-->
+            <div class="col-6">
+              <label for="editDays" class="form-label">Días:</label>
+              <input type="number" class="form-control" id="editDays" name="editDays" placeholder="" min="1" value="">
+            </div>
+          </div>
+          <!--Description label-->
+          <div class="mb-3">
+            <label for="editPlanDescription" class="form-label">Descripción:</label>
+            <textarea class="form-control" id="editPlanDescription" name="editPlanDescription" placeholder=""></textarea>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">Editar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+{% endblock %}

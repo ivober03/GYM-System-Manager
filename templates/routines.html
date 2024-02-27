@@ -1,0 +1,171 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Routines
+{% endblock %}
+
+{% block main %}
+
+<div class="pagetitle">
+
+
+
+  <div class="d-flex align-items-center ">
+  <h1 style="margin-top:10px; width:100%">Rutinas:</h1>
+      <div class="" style="display: inline-block;">
+        <div style="display: inline-block;margin-bottom:10px;margin-top:14px;">
+          <div class="btn-group">
+            <button class="btn btn-primary ms-auto mr-2" type="button" style="white-space: nowrap;"  aria-haspopup="true" aria-expanded="false" data-bs-toggle="modal" data-bs-target="#createNewRoutineModal">
+            <i class="bi bi-plus-lg "></i>   Crear Rutina
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<section class="section dashboard">
+
+  <div class="col-lg-12">
+    <div class="row">
+      {% for routine in routines %}
+      <div class="col-xl-4 col-lg-4 mb-4">
+        <!-- Start Plans Card -->
+        <div class="card card-stats mb-4 mb-xl-0 h-100">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-10">
+                <h5 class="card-title-2 text-muted mb-0" style="line-height: 1.2 !important;">{{ routine['name']}}:</h5>
+              </div>
+              <div class="col-2 text-right">
+                <div class="dropdown">
+                  <a class="icon" href="#" data-bs-toggle="dropdown">
+                    <i class="bi bi-three-dots-vertical" style="font-size: 1.3rem !important; margin-top: 2px;"></i>
+                  </a>
+                  <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                    <li>
+                      <button class="dropdown-item edit-routine-btn" type="button" data-bs-target="#editRoutineModal" data-bs-toggle="modal" data-routine-id="{{routine['id']}}" aria-haspopup="true" aria-expanded="false">
+                      <i class="bi bi-pencil"></i> Edit
+                      </button>
+                    </li>
+                    <li>
+                      <form action="/delete_routine/{{ routine['id'] }}" method="POST">
+                        <button type="submit" class="dropdown-item" onclick="return confirm('Confirmar borrar plan:')">
+                          <i class="bi bi-trash"></i> Borrar</button>
+                      </form>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <hr style="margin-top: 0px;">
+            <div class="row">
+              <div class="col-12 mt-3">
+                <div class="d-flex justify-content-between">
+                  <div>
+                    <span class="h2 font-weight-bold mb-0 text-wrap">Descripcion: </span>
+                    <span class="text-wrap">{{ routine['description'] }}</span>
+                  </div>
+                  <a href="{{ url_for('static', filename='uploads/' + routine['pdf_link']) }}" target="_blank">
+                    <button type="button" class="btn btn-outline-primary btn-sm" style="margin-top: auto;">
+                        <i class="bi bi-file-earmark-pdf-fill"></i>
+                    </button>
+                </a>
+                
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- End Plans Card -->
+      </div>
+    </div>
+      {% endfor %}
+    </div>
+    
+  </div>
+</section>
+
+<!-- Create routine modal section-->
+<div class="modal fade" id="createNewRoutineModal" tabindex="-1" aria-labelledby="createNewRoutineModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-md">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="createNewRoutineModalLabel">Crear Nueva Rutina</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <form action="/create_new_routine" method="post" enctype="multipart/form-data">
+              <div class="modal-body">
+                  <!--Name label-->
+                  <div class="mb-3">
+                      <label for="routineName" class="form-label">Nombre:</label>
+                      <div class="input-group">
+                          <input type="text" class="form-control" name="routineName" id="routineName"
+                              placeholder="Ingrese el nombre de la rutina">
+                      </div>
+                  </div>
+                  <!--Description label-->
+                  <div class="mb-3">
+                      <label for="routineDescription" class="form-label">Descripción:</label>
+                      <textarea class="form-control" id="routineDescription" name="routineDescription"
+                          placeholder="Ingrese una Descripcion"></textarea>
+                  </div>
+
+                  <!--Pdf uploader label-->
+                  <div class="mb-3">
+                    <label for="routinePdf" class="form-label">Rutina:</label>
+                    <input class="form-control bi-file-earmark-pdf-fill" type="file" id="routinePdf" name="routinePdf" accept=".pdf">
+                  </div>
+
+              </div>
+              <div class="modal-footer">
+                  <button type="submit" class="btn btn-primary">Crear</button>
+              </div>
+          </form>
+      </div>
+  </div>
+</div>
+
+<!--Edit routine modal-->
+
+<div class="modal fade" id="editRoutineModal" tabindex="-1" aria-labelledby="editRoutineModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-md">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="editModalLabel">Editar Rutina</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <form id="editRoutineForm" method="post" enctype="multipart/form-data">
+              <div class="modal-body">
+                  <!--Name label-->
+                  <div class="mb-3">
+                      <label for="editRoutineName" class="form-label">Nombre:</label>
+                      <div class="input-group">
+                          <input type="text" class="form-control" name="editRoutineName" id="editRoutineName"
+                              placeholder="Ingrese el nombre de la rutina">
+                      </div>
+                  </div>
+                  <!--Description label-->
+                  <div class="mb-3">
+                      <label for="editRoutineDescription" class="form-label">Descripción:</label>
+                      <textarea class="form-control" id="editRoutineDescription" name="editRoutineDescription"
+                          placeholder="Ingrese una Descripcion"></textarea>
+                  </div>
+
+                  <!--Pdf uploader label-->
+                  
+                  <div class="mb-3">
+                    <label for="routinePdf" class="form-label">Rutina:</label>
+                    <input class="form-control bi-file-earmark-pdf-fill" type="file" id="routinePdf" name="routinePdf" accept=".pdf">
+                  </div>
+
+              </div>
+              <div class="modal-footer">
+                  <button type="submit" class="btn btn-primary">Editar</button>
+              </div>
+          </form>
+      </div>
+  </div>
+</div>
+
+
+{% endblock %}
