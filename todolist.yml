@@ -5,6 +5,8 @@ todo list:
 - Crear una seccion de expensas (done)
 - Poner opciones de filtrado de busqueda, Ej:: seccion de miembros poder filtrar segun el estado de su pago
 - Manejar excepciones para rutinas y planes sin determinar.
+-- PAGOS:
+  - NO PERMITIR QUE SE HAGA UN PAGO CON EL PLAN SIN DEFINIR
 -- Miembros:
   - Manejar periodo de membresia(done)
   - Enviar un mail de recivo y vencimiento de la cuota(done)
