@@ -380,11 +380,9 @@ def create_new_routine():
     if 'routinePdf' in request.files:
         pdf_file = request.files['routinePdf']
 
-        # Check if the file has an allowed extension (e.g., PDF)
-        if pdf_file and pdf_file.filename.endswith('.pdf'):
-            # Save the file to the uploads folder
-            pdf_filename = secure_filename(pdf_file.filename)
-            pdf_file.save(os.path.join(app.config['UPLOAD_FOLDER'], pdf_filename))
+        # Save the file to the uploads folder
+        pdf_filename = secure_filename(pdf_file.filename)
+        pdf_file.save(os.path.join(app.config['UPLOAD_FOLDER'], pdf_filename))
 
     # Upload data to database
     db.execute("INSERT INTO routines (name, description, pdf_link, user_id) "
@@ -438,16 +436,24 @@ def get_routine(routine_id):
 @app.route('/edit_routine/<int:routine_id>', methods=['POST', 'GET'])
 def edit_routine(routine_id):
     """Edit Routine"""
-    routine = db.execute("SELECT * FROM routines WHERE id = :routine_id", routine_id= routine_id)
+    routine = db.execute("SELECT * FROM routines WHERE id = :routine_id", routine_id=routine_id)
+
     if len(routine) == 1:
         # Get the new form data
         routine_name = request.form['editRoutineName']
         routine_description = request.form['editRoutineDescription']
-        routine_pdf = request.form['editRoutinePdf']          
+        pdf_filename = request.form['editRoutinePdf']
+
+    if 'editRoutinePdf' in request.files:
+        pdf_file = request.files['editRoutinePdf']
+
+        # Save the file to the uploads folder
+        pdf_filename = secure_filename(pdf_file.filename)
+        pdf_file.save(os.path.join(app.config['UPLOAD_FOLDER'], pdf_filename))
 
     # Update the plan data in the database
-    db.execute("UPDATE routines SET name = :routine_name, description = :routine_description, pdf_link = :routine_pdf  WHERE id = :routine_id",
-                   routine_name=routine_name, routine_description=routine_description, routine_pdf=routine_pdf, routine_id=routine_id)
+    db.execute("UPDATE routines SET name = :routine_name, description = :routine_description, pdf_link = :pdf_filename  WHERE id = :routine_id",
+               routine_name=routine_name, routine_description=routine_description, pdf_filename=pdf_filename, routine_id=routine_id)
 
     # Redirect user to index page
     return redirect(url_for('routines'))
@@ -465,9 +471,11 @@ def expenses():
     return render_template("expenses.html", users=users, expenses=expenses)
 
 
+
+
 @app.route('/create_new_expense', methods=['POST'])
 def create_new_expense():
-    """Create new expense """
+    """Create new expense"""
 
     # Get form data
     expense_name = request.form['expenseName']
@@ -476,17 +484,19 @@ def create_new_expense():
 
     # Save date and time
     current_datetime = datetime.now()
-    formatted_datetime = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
+    formatted_datetime = current_datetime.strftime("%Y-%m-%d ")
+
 
     # Upload data to database
     db.execute("INSERT INTO expenses (name, type, price, date, user_id) "
-               "VALUES (:expense_name, :expense_type, :expense_price, :formatted_datetime, :user_id)",
-               expense_name=expense_name, expense_type=expense_type, expense_price=expense_price,
-               formatted_datetime=formatted_datetime, user_id=session["user_id"])
-    
+                "VALUES (:expense_name, :expense_type, :expense_price, :formatted_datetime, :user_id)",
+                expense_name=expense_name, expense_type=expense_type, expense_price=expense_price,
+                formatted_datetime=formatted_datetime, user_id=session["user_id"])
 
-    # Redirigir al usuario a la página de índice
-    return redirect(url_for('routines'))
+    # Redirect the user to the index page
+    return redirect(url_for('expenses'))
+
+   
 
 
 @app.route('/login', methods=['GET', 'POST'])

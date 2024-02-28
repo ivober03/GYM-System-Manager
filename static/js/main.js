@@ -212,51 +212,7 @@ editPlanBtns.forEach(function(editPlanBtn) {
   });
 });
 
-// Get all Routine edit buttons
-var editroutineBtns = document.querySelectorAll('.edit-routine-btn');
 
-// Handle click event for each button
-editroutineBtns.forEach(function(editRoutineBtn) {
-  editRoutineBtn.addEventListener('click', function() {
-    var routineId = this.getAttribute('data-routine-id');
-
-    // Make an AJAX request to get the data
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', '/get_routine/' + routineId);
-    xhr.onload = function() {
-      if (xhr.status === 200) {
-        var routine = JSON.parse(xhr.responseText);
-
-        // Complete modal with the data
-        document.getElementById('editRoutineName').value = routine.name;
-        document.getElementById('editRoutineDescription').value = routine.description;
-        document.getElementById('editRoutinePdf').value = routine.pdf_link;
-
-        // Get form reference
-        var form = document.getElementById('editRoutineForm');
-
-        // Update the 'action' attribute of the form
-        form.action = '/edit_routine/' + routineId;
-
-        // Open edit routine modal
-        var editRoutineModal = new bootstrap.Modal(document.getElementById('editRoutineModal'));
-        editRoutineModal.show();
-
-        var closeButtons = document.querySelectorAll('[data-bs-dismiss="modal"]');
-        closeButtons.forEach(function(closeButton) {
-          closeButton.addEventListener('click', function() {
-            editRoutineModal.hide();
-          });
-        });
-
-      } else {
-        alert('Error al obtener los datos de la rutina');
-      }
-
-    };
-    xhr.send();
-  });
-});
 
 // Get all member buttons
 var editMemberBtns = document.querySelectorAll('.edit-member-btn');
@@ -358,6 +314,57 @@ editMemberBtns.forEach(function(editMemberBtn) {
       .fail(function() {
         console.error("Error in AJAX request");
       });
+    });
+  });
+})();
+
+
+
+(function() {
+
+  var editroutineBtns = document.querySelectorAll('.edit-routine-btn');
+  
+
+  // Handle click event for each button
+  editroutineBtns.forEach(function(editRoutineBtn) {
+    editRoutineBtn.addEventListener('click', function() {
+      var routineId = this.getAttribute('data-routine-id');
+
+      // Make an AJAX request to get the data
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', '/get_routine/' + routineId);
+      xhr.onload = function() {
+        if (xhr.status === 200) {
+          var routine = JSON.parse(xhr.responseText);
+
+          // Complete modal with the data
+          document.getElementById('editRoutineName').value = routine.name;
+          document.getElementById('editRoutineDescription').value = routine.description;
+          document.getElementById('editRoutinePdf').value = routine.pdf_link;
+
+          // Get form reference
+          var form = document.getElementById('editRoutineForm');
+
+          // Update the 'action' attribute of the form
+          form.action = '/edit_routine/' + routineId;
+
+          // Open edit routine modal
+          var editRoutineModal = new bootstrap.Modal(document.getElementById('editRoutineModal'));
+          editRoutineModal.show();
+
+          var closeButtons = document.querySelectorAll('[data-bs-dismiss="modal"]');
+          closeButtons.forEach(function(closeButton) {
+            closeButton.addEventListener('click', function() {
+              editRoutineModal.hide();
+            });
+          });
+
+        } else {
+          alert('Error al obtener los datos de la rutina');
+        }
+
+      };
+      xhr.send();
     });
   });
 })();
