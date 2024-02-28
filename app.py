@@ -11,7 +11,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from collections import namedtuple
 from werkzeug.utils import secure_filename
 from flask_mail import Mail, Message
-import schedule
+
 import time
 
 
@@ -443,31 +443,6 @@ def get_routine(routine_id):
     else:
         return jsonify({'error': 'routine not found'})
     
-
-@app.route('/edit_routine/<int:routine_id>', methods=['POST', 'GET'])
-def edit_routine(routine_id):
-    """Edit Routine"""
-    routine = db.execute("SELECT * FROM routines WHERE id = :routine_id", routine_id=routine_id)
-
-    if len(routine) == 1:
-        # Get the new form data
-        routine_name = request.form['editRoutineName']
-        routine_description = request.form['editRoutineDescription']
-        pdf_filename = request.form['editRoutinePdf']
-
-    if 'editRoutinePdf' in request.files:
-        pdf_file = request.files['editRoutinePdf']
-
-        # Save the file to the uploads folder
-        pdf_filename = secure_filename(pdf_file.filename)
-        pdf_file.save(os.path.join(app.config['UPLOAD_FOLDER'], pdf_filename))
-
-    # Update the plan data in the database
-    db.execute("UPDATE routines SET name = :routine_name, description = :routine_description, pdf_link = :pdf_filename  WHERE id = :routine_id",
-               routine_name=routine_name, routine_description=routine_description, pdf_filename=pdf_filename, routine_id=routine_id)
-
-    # Redirect user to index page
-    return redirect(url_for('routines'))
 
 
 @app.route('/expenses', methods=['GET'])

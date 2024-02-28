@@ -44,11 +44,6 @@
                   </a>
                   <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                     <li>
-                      <button class="dropdown-item edit-routine-btn" type="button" data-bs-target="#editRoutineModal" data-bs-toggle="modal" data-routine-id="{{routine['id']}}" aria-haspopup="true" aria-expanded="false">
-                      <i class="bi bi-pencil"></i> Edit
-                      </button>
-                    </li>
-                    <li>
                       <form action="/delete_routine/{{ routine['id'] }}" method="POST">
                         <button type="submit" class="dropdown-item" onclick="return confirm('Confirmar borrar plan:')">
                           <i class="bi bi-trash"></i> Borrar</button>
@@ -127,45 +122,6 @@
 
 <!--Edit routine modal-->
 
-<div class="modal fade" id="editRoutineModal" tabindex="-1" aria-labelledby="editRoutineModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-md">
-      <div class="modal-content">
-          <div class="modal-header">
-              <h5 class="modal-title" id="editModalLabel">Editar Rutina</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <form id="editRoutineForm" method="post" enctype="multipart/form-data">
-              <div class="modal-body">
-                  <!--Name label-->
-                  <div class="mb-3">
-                      <label for="editRoutineName" class="form-label">Nombre:</label>
-                      <div class="input-group">
-                          <input type="text" class="form-control" name="editRoutineName" id="editRoutineName"
-                              placeholder="Ingrese el nombre de la rutina">
-                      </div>
-                  </div>
-                  <!--Description label-->
-                  <div class="mb-3">
-                      <label for="editRoutineDescription" class="form-label">Descripción:</label>
-                      <textarea class="form-control" id="editRoutineDescription" name="editRoutineDescription"
-                          placeholder="Ingrese una Descripcion"></textarea>
-                  </div>
-
-                  <!--Pdf uploader label-->
-                  
-                  <div class="mb-3">
-                    <label for="editRoutinePdf" class="form-label">Rutina:</label>
-                    <input class="form-control bi-file-earmark-pdf-fill" type="file" id="editRoutinePdf" name="editRoutinePdf" accept=".pdf">
-                  </div>
-
-              </div>
-              <div class="modal-footer">
-                  <button type="submit" class="btn btn-primary">Editar</button>
-              </div>
-          </form>
-      </div>
-  </div>
-</div>
 
 
 {% endblock %}

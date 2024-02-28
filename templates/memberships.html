@@ -78,27 +78,27 @@
               <form id="toggleForm" action="/toggle_send_email/{{member['id']}}" method="post" style="display: inline-block;">
                 <button type="submit" class="btn btn-sm 
                   {% if member['reminded'] == 2 %}
-                    btn-outline-info
+                    btn-outline-secondary
                   {% else %}
-                    btn-info
+                    btn-secondary
                   {% endif %}
                   " style=" vertical-align: middle ;">
-                  <i class="bi bi-envelope" style="font-size: 1.1em; color: black;"></i>
+                  <i class="bi bi-envelope" style="font-size: 1.1em; "></i>
                 </button>
               </form>
             </td>
             
 
             <td style="padding-top: 10px;"> <!-- Actions column -->
-              <button class="edit-member-btn btn btn-outline-primary btn-sm" style="background-color: transparent;  vertical-align: middle;" type="button" data-bs-target="#editMemberModal" data-bs-toggle="modal" data-member-id="{{member['id']}}" aria-haspopup="true" aria-expanded="false" >
-                <i class="bi bi-pencil" style="font-size: 1em; color: blue;"></i> <!-- Edit icon -->
+              <button class="edit-member-btn btn btn-outline-primary btn-sm" style="  vertical-align: middle;" type="button" data-bs-target="#editMemberModal" data-bs-toggle="modal" data-member-id="{{member['id']}}" aria-haspopup="true" aria-expanded="false" >
+                <i class="bi bi-pencil" style="font-size: 1em; "></i> <!-- Edit icon -->
               </button>
             </td>
           
             <td style="padding-top: 10px;"> <!-- Actions column -->
               <form action="/delete_member/{{ member['id'] }}" method="post" style="display: inline-block;">
-                  <button type="submit" class="btn btn-outline-danger btn-sm" style="background-color: transparent;  vertical-align: middle;" onclick="return confirm('Una vez borrado no se podrán recuperar los datos del miembro. ¿Desea borrarlo sabiendo esto?')">
-                      <i class="bi bi-trash" style="font-size: 1.1em; color: red;"></i> <!-- Delete icon -->
+                  <button type="submit" class="btn btn-outline-danger btn-sm" style="  vertical-align: middle;" onclick="return confirm('Una vez borrado no se podrán recuperar los datos del miembro. ¿Desea borrarlo sabiendo esto?')">
+                      <i class="bi bi-trash" style="font-size: 1.1em; "></i> <!-- Delete icon -->
                   </button> <!-- Delete button -->
               </form>
           </td>
