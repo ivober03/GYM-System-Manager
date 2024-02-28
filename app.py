@@ -89,6 +89,7 @@ def plans():
     
     return render_template("plans.html", users=users, plans=plans)
 
+
 @app.route('/payments', methods=['GET'])
 def payments():
     """Show plans"""
@@ -105,7 +106,7 @@ def payments():
 @app.route('/create_new_payment', methods=['POST'])
 def create_new_payment():
     # Get form data
-    p_name = request.form['paymentMemberName']
+    p_id = request.form['paymentMemberName']
     p_type = request.form['paymentType']
     
     # Save date and time
@@ -114,17 +115,16 @@ def create_new_payment():
     
     # Upload data to database
     db.execute("INSERT INTO payments (type, date, member_id, gym_id) "
-           "VALUES ( :p_type, :formatted_datetime, :p_name, :gym_id )",
-            p_type=p_type,  gym_id=session["user_id"],  formatted_datetime=formatted_datetime, p_name=p_name)
+           "VALUES ( :p_type, :formatted_datetime, :p_id, :gym_idss )",
+            p_type=p_type,  gym_id=session["user_id"],  formatted_datetime=formatted_datetime, p_id=p_id)
     
-    
-    send_payment_recived(p_name)
 
-    
+    # Ejecute update status function 
+    update_status()
+    send_payment_recived(p_id)
+
     # Return to memberships page
     return redirect(url_for('payments'))
-
-
 
 
 @app.route('/delete_payment/<int:payment_id>', methods=['POST'])
@@ -160,8 +160,6 @@ def create_new_plan():
 
     # Redirigir al usuario a la página de índice
     return redirect(url_for('plans'))
-
-
 
 
 @app.route('/delete_plan/<int:plan_id>', methods=['POST'])
@@ -233,7 +231,6 @@ def memberships():
     plans = db.execute("SELECT * FROM plans WHERE user_id = :user_id", user_id=user_id)
     users = db.execute("SELECT * FROM users WHERE id = :id", id=user_id)
 
-
     # Check if there is a search query parameter in the URL
     query = request.args.get('query', '')
 
@@ -248,7 +245,6 @@ def memberships():
         members = db.execute("SELECT * FROM members WHERE gym_id = :gym_id", gym_id=user_id)
 
     # Ejecute update status function 
-    
     update_status()
     
 
@@ -280,14 +276,29 @@ def create_new_membership():
     if m_routine_id == 0:
         m_routine_id = None
 
-
     # Upload data to database
     db.execute("INSERT INTO members (name, gym_id, plan_id, routine_id, email, start_date, gender, emergency_contact) "
            "VALUES (:m_name, :user_id, :m_plan_id, :m_routine_id, :m_email, :formatted_datetime, :m_gender, :m_emergency_number)",
            m_name=m_name, user_id=session["user_id"], m_plan_id=m_plan_id, m_routine_id=m_routine_id,
            m_email=m_email, formatted_datetime=formatted_datetime, m_gender=m_gender, m_emergency_number=m_emergency_number)
 
-    
+
+    if m_payment == 'Efectivo' or m_payment == 'Transferencia':
+
+        # Get member id
+        result = db.execute()
+
+        # Upload payment to database
+        db.execute("INSERT INTO payments (type, date, member_id, gym_id) "
+            "VALUES ( :m_payment, :formatted_datetime, :p_id, :gym_id )",
+                m_payment=m_payment,  gym_id=session["user_id"],  formatted_datetime=formatted_datetime, p_name=p_id)
+   
+   
+    # Ejecute update status function 
+    update_status()
+
+
+
     # Return to memberships page
     return redirect(url_for('memberships'))
 
@@ -496,8 +507,6 @@ def create_new_expense():
     # Redirect the user to the index page
     return redirect(url_for('expenses'))
 
-   
-
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -607,7 +616,6 @@ def toggle_send_email(member_id):
         db.execute("UPDATE members SET reminded = :reminded WHERE id = :member_id",reminded = 1, member_id=member['id'])
     
     return redirect(url_for('memberships'))
-    
     
     
 def update_status():
