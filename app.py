@@ -116,6 +116,9 @@ def create_new_payment():
     db.execute("INSERT INTO payments (type, date, member_id, gym_id) "
            "VALUES ( :p_type, :formatted_datetime, :p_name, :gym_id )",
             p_type=p_type,  gym_id=session["user_id"],  formatted_datetime=formatted_datetime, p_name=p_name)
+    
+    
+    send_payment_recived(p_name)
 
     
     # Return to memberships page
@@ -247,7 +250,7 @@ def memberships():
     # Ejecute update status function 
     
     update_status()
-    send_payment_reminders()
+    
 
     # Render the memberships.html template and pass the data to it
     return render_template("memberships.html", users=users, plans=plans, routines=routines, members=members, query=query)
@@ -581,6 +584,20 @@ def dashboard():
         return render_template('dashboard.html')
     else:
         return redirect(url_for('login'))
+
+
+@app.route('/toggle_send_email/<int:member_id>', methods=["POST"])
+def toggle_send_email(member_id):
+    
+    result = db.execute("SELECT * FROM members WHERE id = :member_id", member_id=member_id)
+    member = result[0]
+    if member['reminded'] < 2:
+        db.execute("UPDATE members SET reminded = :reminded WHERE id = :member_id",reminded = 2, member_id=member['id'])
+    else:
+        db.execute("UPDATE members SET reminded = :reminded WHERE id = :member_id",reminded = 1, member_id=member['id'])
+    
+    return redirect(url_for('memberships'))
+    
     
     
 def update_status():
@@ -610,13 +627,18 @@ def update_status():
         if paid:
             start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
             due_date = start_date + timedelta(days=28)
+            week_before_due_date = start_date + timedelta(days=21)
+            
+            if week_before_due_date <= actual_date:
+                send_payment_reminders(member['id'])
 
             # Compare dates
             if due_date <= actual_date:
                 db.execute("UPDATE members SET status = :status WHERE id = :member_id", status="Vencido", member_id=member['id'])
             else:
                 db.execute("UPDATE members SET status = :status WHERE id = :member_id", status="Activo", member_id=member['id'])
-                db.execute("UPDATE members SET reminded = :reminded WHERE id = :member_id", reminded = 0, member_id=member['id'] )
+                if member['reminded'] != 2:
+                    db.execute("UPDATE members SET reminded = :reminded WHERE id = :member_id", reminded = 0, member_id=member['id'] )
         else:
             db.execute("UPDATE members SET status = :status WHERE id = :member_id", status="Pendiente", member_id=member['id'])
     
@@ -628,19 +650,25 @@ def send_email(to, subject, body):
     mail.send(msg)
     
 
-def send_payment_reminders():
+def send_payment_reminders(member_id):
+    
     # Get members that have not payed the cuote
-    unpaid_members = db.execute("SELECT * FROM members WHERE status = 'Vencido'")
-
-    for member in unpaid_members:
-        if 'reminded' in member and member['reminded'] == 0:
-            # Send email
-            if member['email'] != None:
-                send_email(member['email'], 'Recordatorio de pago', f'Hola {member["name"]}, recuerda que debes pagar la cuota del mes.')
-
-            # Mark as reminded
+    result = db.execute("SELECT * FROM members WHERE id = :member_id", member_id = member_id)
+    member = result[0]
+    if member['email'] != None and member['reminded'] == 0:
+        send_email(member['email'], 'Recordatorio de pago', f'Hola {member["name"]}, recuerda que debes pagar la cuota del mes.')
+        # Mark as reminded
+        if member['reminded'] != 2:
             db.execute("UPDATE members SET reminded = :reminded WHERE id = :member_id",reminded = 1, member_id=member['id'])
 
+def send_payment_recived(member_id):
+    result = db.execute("SELECT * FROM members WHERE id = :member_id", member_id = member_id)
+    member = result[0]
+    if member['email'] != None and member['reminded'] != 2:
+        send_email(member['email'],"Comprobante de pago power Gym",f"ACA VA EL COMPROBANTE IVO NO TE OLVIDES")
+    
+    
+    
     
 if __name__ == '__main__':
     app.run()

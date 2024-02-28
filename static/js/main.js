@@ -327,10 +327,37 @@ editMemberBtns.forEach(function(editMemberBtn) {
 });
 
 
+  
+  
+
+
+
+
+
   var currentDate = moment().format('ddd MMM DD YYYY'); // Get formated current date
   console.log(currentDate);
   document.getElementById('datepicker').setAttribute('placeholder', currentDate);
   document.getElementById('datepickerBreak').setAttribute('placeholder', currentDate);
   document.getElementById('datepickerBreak2').setAttribute('placeholder', currentDate);
 
+})();
+
+(function() {
+  $(document).ready(function() {
+    $('#toggleForm').submit(function(e) {
+      e.preventDefault();
+
+      $.post($(this).attr('action'), function(data) {
+        // Assuming data is a JSON response from the server
+        if (data.reminded == 2) {
+          $('#toggleForm button').removeClass('btn-info').addClass('btn-outline-info');
+        } else {
+          $('#toggleForm button').removeClass('btn-outline-info').addClass('btn-info');
+        }
+      })
+      .fail(function() {
+        console.error("Error in AJAX request");
+      });
+    });
+  });
 })();

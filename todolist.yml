@@ -3,9 +3,11 @@ todo list:
 - Hacer la pagina individual para cada miembro
 - Vincular la informacion para mostrarla en el dashboard
 - Crear una seccion de expensas (done)
+- Poner opciones de filtrado de busqueda, Ej:: seccion de miembros poder filtrar segun el estado de su pago
 -- Miembros:
-  - Manejar periodo de membresia
-  - Enviar un mail de recivo y vencimiento de la cuota
-  - En base al pago de la cuota actualizar el estado de cada miembro
+  - Manejar periodo de membresia(done)
+  - Enviar un mail de recivo y vencimiento de la cuota(done)
+  - En base al pago de la cuota actualizar el estado de cada miembro(done)
+  - Repensar borrar member/payment
 -- Dashboard:
   - Tener la opcion de ocultar el total del dinero y las expensas

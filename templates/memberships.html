@@ -47,6 +47,7 @@
             <th scope="col">Fecha de inicio</th>
             <th scope="col"></th> <!-- New column for buttons -->
             <th scope="col"></th> <!-- New column for buttons -->
+            <th scope="col"></th>
 
           </tr>
         </thead>
@@ -72,6 +73,21 @@
             <td>{{member.email}}</td>
             <td>{{member.emergency_contact}}</td>
             <td>{{member.start_date}}</td>
+
+            <td style="padding-top: 10px;">
+              <form id="toggleForm" action="/toggle_send_email/{{member['id']}}" method="post" style="display: inline-block;">
+                <button type="submit" class="btn btn-sm 
+                  {% if member['reminded'] == 2 %}
+                    btn-outline-info
+                  {% else %}
+                    btn-info
+                  {% endif %}
+                  " style=" vertical-align: middle ;">
+                  <i class="bi bi-envelope" style="font-size: 1.1em; color: black;"></i>
+                </button>
+              </form>
+            </td>
+            
 
             <td style="padding-top: 10px;"> <!-- Actions column -->
               <button class="edit-member-btn btn btn-outline-primary btn-sm" style="background-color: transparent;  vertical-align: middle;" type="button" data-bs-target="#editMemberModal" data-bs-toggle="modal" data-member-id="{{member['id']}}" aria-haspopup="true" aria-expanded="false" >
