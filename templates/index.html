@@ -97,10 +97,16 @@
             <div class="row">
               <div class="col">
                 <h5 class="card-title text-muted" style="margin-bottom: 17px;">Miembros Activos:</h5>
-                
+                {% set m_count = [0] %} {# Wrap count in a list to make it mutable #}
+                {% for member in members %}
+                  {% if member['status'] == 'Activo' %}
+                    {% set _ = m_count.append(1) %} 
+                  {% endif %}
+                {% endfor %}
                 <span class="h2 font-weight-bold mt-0 mb-0 ">
-                  76 Personas
+                   {{ m_count|length - 1 }} Personas {# Subtract 1 to exclude the initial 0 #}
                 </span>
+
               </div>
               <div class="col-auto">
                 <div class="icon icon-shape bg-yellow text-white rounded-circle shadow">

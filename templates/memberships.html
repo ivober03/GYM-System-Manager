@@ -158,7 +158,11 @@
                 <select class="form-select" id="membershipPlan" name="membershipPlan">
                   <option value="0">Sin determinar</option>
                   {% for plan in plans %}
-                  <option value="{{ plan['id'] }}">{{ plan['name'] }}</option>
+                    {% if plan['id'] == 0 %}
+                     <option value="{{ plan['id'] }}"> Sin Determinar</option>
+                    {% else %}
+                      <option value="{{ plan['id'] }}">{{ plan['name'] }}</option>
+                    {% endif %}
                   {% endfor %}
                 </select>
               </div>
@@ -170,7 +174,11 @@
                   <!-- Implementar for recorriendo la base de datos y agregando las opciones -->
                   <option value="0">Sin determinar</option>
                   {% for routine in routines %}
-                  <option value="{{ routine['id'] }}">{{ routine['name'] }}</option>
+                    {% if routine['id'] == 0 %}
+                      <option value="{{ routine['id'] }}">Sin Determinar</option>
+                    {% else %}
+                      <option value="{{ routine['id'] }}">{{ routine['name'] }}</option>
+                    {% endif %}
                   {% endfor %}
               </select>
             </div>

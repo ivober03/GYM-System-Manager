@@ -67,6 +67,7 @@ def index():
     #)
 
     users = db.execute("SELECT * FROM users WHERE id = :id", id=session["user_id"])
+    members = db.execute("SELECT * FROM members WHERE gym_id = :id", id=session["user_id"])
 
     # Retrieve specific plan data
     #plan_id = request.args.get("plan_id")  # Get the plan ID of the request
@@ -75,7 +76,7 @@ def index():
         #plan = db.execute("SELECT * FROM plans WHERE id = :id", id=plan_id).fetchone()
 
 
-    return render_template("index.html", users=users)
+    return render_template("index.html", users=users, members =members)
 
 
 @app.route('/plans', methods=['GET'])
@@ -115,7 +116,7 @@ def create_new_payment():
     
     # Upload data to database
     db.execute("INSERT INTO payments (type, date, member_id, gym_id) "
-           "VALUES ( :p_type, :formatted_datetime, :p_id, :gym_idss )",
+           "VALUES ( :p_type, :formatted_datetime, :p_id, :gym_id )",
             p_type=p_type,  gym_id=session["user_id"],  formatted_datetime=formatted_datetime, p_id=p_id)
     
 
@@ -386,7 +387,7 @@ def create_new_routine():
     # Get form data
     routine_name = request.form['routineName']
     routine_description = request.form['routineDescription']
-    pdf_filename = ''
+    pdf_filename = '-'
 
     if 'routinePdf' in request.files:
         pdf_file = request.files['routinePdf']
@@ -561,7 +562,8 @@ def register():
         # get the ID of the inserted user
         user_id = db.execute("SELECT id FROM users WHERE email = :email", email=email)[0]["id"]
 
-
+        # CREAR PLAN Y RUTINA 0
+        
         # Redirect user to login form
         flash("Registration completed successfully!")
         return redirect(url_for('login'))
