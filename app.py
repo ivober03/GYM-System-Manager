@@ -282,22 +282,25 @@ def create_new_membership():
            m_name=m_name, user_id=session["user_id"], m_plan_id=m_plan_id, m_routine_id=m_routine_id,
            m_email=m_email, formatted_datetime=formatted_datetime, m_gender=m_gender, m_emergency_number=m_emergency_number)
 
-
+    print(m_payment)
     if m_payment == 'Efectivo' or m_payment == 'Transferencia':
 
         # Get member id
-        result = db.execute()
+        result = db.execute("SELECT last_insert_rowid() as id")
 
-        # Upload payment to database
+        result = result[0]
+        member_id = result["id"]
+        print(member_id)
+
+
+       # Upload payment to database
         db.execute("INSERT INTO payments (type, date, member_id, gym_id) "
-            "VALUES ( :m_payment, :formatted_datetime, :p_id, :gym_id )",
-                m_payment=m_payment,  gym_id=session["user_id"],  formatted_datetime=formatted_datetime, p_name=p_id)
+            "VALUES ( :m_payment, :formatted_datetime, :member_id, :gym_id )",
+                m_payment=m_payment,  gym_id=session["user_id"],  formatted_datetime=formatted_datetime, member_id=member_id)
    
    
     # Ejecute update status function 
     update_status()
-
-
 
     # Return to memberships page
     return redirect(url_for('memberships'))
