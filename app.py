@@ -69,6 +69,8 @@ def index():
     users = db.execute("SELECT * FROM users WHERE id = :id", id=session["user_id"])
     members = db.execute("SELECT * FROM members WHERE gym_id = :id", id=session["user_id"])
     ingresos_mensuales = calcular_ingresos_mensuales()
+    nuevos_miembros = obtener_nuevos_miembros()
+    expensas_mensuales = calcular_expensas_mensuales()
 
     # Retrieve specific plan data
     #plan_id = request.args.get("plan_id")  # Get the plan ID of the request
@@ -77,7 +79,7 @@ def index():
         #plan = db.execute("SELECT * FROM plans WHERE id = :id", id=plan_id).fetchone()
 
 
-    return render_template("index.html", users=users, members =members, ingresos_mensuales = ingresos_mensuales)
+    return render_template("index.html", users=users, members =members, ingresos_mensuales = ingresos_mensuales, nuevos_miembros = nuevos_miembros, expensas_mensuales = expensas_mensuales)
 
 
 @app.route('/plans', methods=['GET'])
@@ -668,6 +670,8 @@ def send_payment_recived(member_id):
         send_email(member['email'],"Comprobante de pago power Gym",f"ACA VA EL COMPROBANTE IVO NO TE OLVIDES")
 
 
+
+"""Index card section"""
 def calcular_ingresos_mensuales():
     # Calcular mes y año actual
     fecha_actual = datetime.now()
@@ -716,7 +720,7 @@ def calcular_ingresos_mensuales():
     return {
         'ingresos_mensuales_actual': ingresos_mensuales_actual,
         'ingresos_mensuales_anterior': ingresos_mensuales_anterior,
-        'porcentaje_cambio': porcentaje_cambio
+        'porcentaje_cambio': round(porcentaje_cambio)
     }
     
     
@@ -726,7 +730,7 @@ def obtener_miembros_pagados_mes(mes, año):
     mes_formateado = f'{int(mes):02d}'
     año = str(año)
     print("Mes y Año:", mes_formateado, año)
-    
+    # Seleccionar miembros uniendo la tabla payments para filtrar segun si realizo un pago este mes
     return db.execute("""
         SELECT members.*
         FROM members
@@ -746,7 +750,58 @@ def calcular_ingreso_miembro(member):
         return plan['price']
     else:
         return 0
+
+def obtener_nuevos_miembros():
+    # Obtener mes actual 
+    fecha_actual = datetime.now()
+    mes_actual = f'{int(fecha_actual.month):02d}'
     
+    #Obtener mes anterior
+    fecha_anterior = fecha_actual - timedelta(days=fecha_actual.day)
+    mes_anterior = f'{int(fecha_anterior.month):02d}'
+    
+    # Obtener miembros nuevos Actual
+    members = db.execute("SELECT * FROM members WHERE strftime( '%m' , members.start_date) = :mes_actual ", mes_actual = mes_actual)
+    cant_members_actual = len(members)
+    
+    # Obtener miembros nuevos Anterior
+    members_anterior = db.execute("SELECT * FROM members WHERE strftime( '%m' , members.start_date) = :mes_anterior ", mes_anterior = mes_anterior)
+    cant_members_anterior = len(members_anterior)
+    print(cant_members_anterior)
+    porcentaje_cambio = ((cant_members_actual - cant_members_anterior) / cant_members_anterior) * 100 if cant_members_anterior != 0 else 0
+    
+    return {
+            'nuevos_miembros' :cant_members_actual,
+            'porcentaje_cambio' :round(porcentaje_cambio)
+    }
+    
+    
+def calcular_expensas_mensuales():
+    # Obtener mes actual 
+    fecha_actual = datetime.now()
+    mes_actual = f'{int(fecha_actual.month):02d}'
+    
+    #Obtener mes anterior
+    fecha_anterior = fecha_actual - timedelta(days=fecha_actual.day)
+    mes_anterior = f'{int(fecha_anterior.month):02d}'
+    
+    #Obtener expensas del mes
+    expensas = db.execute("SELECT * FROM expenses WHERE strftime( '%m' , expenses.date) = :mes_actual ", mes_actual = mes_actual)
+    suma_expensas_actual = sum(expensa['price'] for expensa in expensas )
+    
+    #Obtener expensas mes anterior
+    expensas_anterior = db.execute("SELECT * FROM expenses WHERE strftime( '%m' , expenses.date) = :mes_anterior ", mes_anterior = mes_anterior)
+    suma_expensas_anterior = sum(expensa['price'] for expensa in expensas_anterior )
+    
+    #Calcular porcentaje de cambio
+    porcentaje_cambio = ((suma_expensas_actual - suma_expensas_anterior) / suma_expensas_anterior) * 100 if suma_expensas_anterior != 0 else 0
+    
+    return {
+        'expensas_mensuales_actual' : suma_expensas_actual,
+        'porcentaje_cambio' : round(porcentaje_cambio)
+    }
+    
+
 
     
     
