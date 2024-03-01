@@ -63,8 +63,8 @@
                     <span class="h2 font-weight-bold mb-0 text-wrap">Descripcion: </span>
                     <span class="text-wrap">{{ routine['description'] }}</span>
                   </div>
-                  <a href="{{ url_for('static', filename='uploads/' + routine['pdf_link']) }}" target="_blank">
-                    <button type="button" class="btn btn-outline-primary btn-sm" style="margin-top: auto;">
+                  <a href="{{ url_for('static', filename='uploads/' + routine['pdf_link']) }}"  target="_blank" {% if routine['pdf_link'] == 'default' %} onclick="return false;" {% endif %}>
+                    <button id="openPdfButton" type="button" class="btn btn-outline-primary btn-sm {% if routine['pdf_link'] == 'default' %}disabled{% endif %}" style="margin-top: auto;">
                         <i class="bi bi-file-earmark-pdf-fill"></i>
                     </button>
                 </a>

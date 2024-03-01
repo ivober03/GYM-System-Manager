@@ -68,6 +68,7 @@ def index():
 
     users = db.execute("SELECT * FROM users WHERE id = :id", id=session["user_id"])
     members = db.execute("SELECT * FROM members WHERE gym_id = :id", id=session["user_id"])
+    ingresos_mensuales = calcular_ingresos_mensuales()
 
     # Retrieve specific plan data
     #plan_id = request.args.get("plan_id")  # Get the plan ID of the request
@@ -76,7 +77,7 @@ def index():
         #plan = db.execute("SELECT * FROM plans WHERE id = :id", id=plan_id).fetchone()
 
 
-    return render_template("index.html", users=users, members =members)
+    return render_template("index.html", users=users, members =members, ingresos_mensuales = ingresos_mensuales)
 
 
 @app.route('/plans', methods=['GET'])
@@ -218,7 +219,7 @@ def edit_plan(plan_id):
     db.execute("UPDATE plans SET name = :plan_name, days = :plan_days, price = :plan_price, description = :plan_description WHERE id = :plan_id",
                    plan_name=plan_name, plan_days=plan_days, plan_price=plan_price, plan_description=plan_description, plan_id=plan_id)
 
-    # Redirect user to index page
+    # Redirect user to plans page
     return redirect(url_for('plans'))
 
 
@@ -293,7 +294,7 @@ def create_new_membership():
         member_id = result["id"]
         print(member_id)
 
-
+        send_payment_recived(member_id)
        # Upload payment to database
         db.execute("INSERT INTO payments (type, date, member_id, gym_id) "
             "VALUES ( :m_payment, :formatted_datetime, :member_id, :gym_id )",
@@ -367,7 +368,7 @@ def edit_member(member_id):
     db.execute("UPDATE members SET name = :member_name, plan_id = :member_plan, routine_id = :member_routine, email = :member_email, emergency_contact = :member_number, description = :member_description WHERE id = :member_id",
             member_name=member_name, member_plan=member_plan, member_routine=member_routine, member_email=member_email, member_number=member_number, member_description=member_description, member_id=member_id)
         
-    # Redirect user to index page
+    # Redirect user to memberships page
     return redirect(url_for('memberships'))
 
 
@@ -390,9 +391,9 @@ def create_new_routine():
     # Get form data
     routine_name = request.form['routineName']
     routine_description = request.form['routineDescription']
-    pdf_filename = '-'
+    pdf_filename = 'default'
 
-    if 'routinePdf' in request.files:
+    if 'routinePdf' != None  in request.files:
         pdf_file = request.files['routinePdf']
 
         # Save the file to the uploads folder
@@ -483,7 +484,7 @@ def create_new_expense():
                 expense_name=expense_name, expense_type=expense_type, expense_price=expense_price,
                 formatted_datetime=formatted_datetime, user_id=session["user_id"])
 
-    # Redirect the user to the index page
+    # Redirect the user to the expenses page
     return redirect(url_for('expenses'))
 
 
@@ -606,10 +607,11 @@ def update_status():
 
     # Get all members
     members = db.execute("SELECT * FROM members WHERE gym_id = :user_id", user_id=session["user_id"])
+   
 
     for member in members:
         # Get payment for member
-        result = db.execute("SELECT * FROM payments WHERE member_id = :member_id", member_id=member['id'])
+        result = db.execute("SELECT * FROM payments WHERE member_id = :member_id ORDER BY date DESC", member_id=member['id'])
         paid = False
 
         if result:
@@ -664,7 +666,88 @@ def send_payment_recived(member_id):
     member = result[0]
     if member['email'] != None and member['reminded'] != 2:
         send_email(member['email'],"Comprobante de pago power Gym",f"ACA VA EL COMPROBANTE IVO NO TE OLVIDES")
+
+
+def calcular_ingresos_mensuales():
+    # Calcular mes y año actual
+    fecha_actual = datetime.now()
+    mes_actual = fecha_actual.month
+    año_actual = fecha_actual.year
     
+    # Obtener todos los miembros que hayan pagado en el mes actual
+    members_pagados_actual = obtener_miembros_pagados_mes(mes_actual, año_actual)
+    
+    
+    # Calcular los ingresos del mes
+    ingresos_mensuales_actual = sum([calcular_ingreso_miembro(member) for member in members_pagados_actual])
+    
+    
+    #Calcular mes y año anterior
+    fecha_mes_anterior = fecha_actual - timedelta(days=fecha_actual.day)
+    mes_anterior = fecha_mes_anterior.month
+    año_anterior = fecha_mes_anterior.year
+    
+    #Obtener todos los miembros que hayan pagado en el mes anterior
+    members_pagados_anterior = obtener_miembros_pagados_mes(mes_anterior, año_actual)
+    
+    # Calcular los ingresos del mes anterior
+    ingresos_mensuales_anterior = sum([calcular_ingreso_miembro(member) for member in members_pagados_anterior])
+    
+    #Calcular el porcentaje de cambio
+    porcentaje_cambio = ((ingresos_mensuales_actual - ingresos_mensuales_anterior) / ingresos_mensuales_anterior) * 100 if ingresos_mensuales_anterior != 0 else 0
+    print(porcentaje_cambio)
+    
+    """
+    # Prototipo
+    # Obtener todos los miembros que hayan pagado en el mes
+    members = db.execute("SELECT * FROM members WHERE status = :status", status = "Activo")
+    members_pagados = []
+    
+   
+    for member in members:
+        result = db.execute("SELECT * FROM payments WHERE member_id = :member_id ORDER BY date DESC", member_id=member['id'])
+        last_payment = result[0]
+        if last_payment['date'].month == mes_actual and last_payment['date'].year == año_actual :
+            members_pagados.append(member)
+    """
+    
+    
+        
+    return {
+        'ingresos_mensuales_actual': ingresos_mensuales_actual,
+        'ingresos_mensuales_anterior': ingresos_mensuales_anterior,
+        'porcentaje_cambio': porcentaje_cambio
+    }
+    
+    
+    
+
+def obtener_miembros_pagados_mes(mes, año):
+    mes_formateado = f'{int(mes):02d}'
+    año = str(año)
+    print("Mes y Año:", mes_formateado, año)
+    
+    return db.execute("""
+        SELECT members.*
+        FROM members
+        JOIN payments ON members.id = payments.member_id
+        WHERE strftime('%m', payments.date) = :mes
+        AND strftime('%Y', payments.date) = :año
+        ORDER BY payments.date DESC;
+        """, mes = mes_formateado, año = año )
+   
+    
+    
+def calcular_ingreso_miembro(member):
+    # Obtner el plan del miembro
+    result = db.execute("SELECT * FROM plans WHERE id = :plan_id", plan_id = member['plan_id'])
+    if result:
+        plan=result[0]
+        return plan['price']
+    else:
+        return 0
+    
+
     
     
     

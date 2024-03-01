@@ -318,3 +318,23 @@ editMemberBtns.forEach(function(editMemberBtn) {
   });
 })();
 
+// prevents user to click in a pdf button that doesnt have a pdf
+(function() {
+  document.addEventListener('DOMContentLoaded', function() {
+    var openPdfButton = document.getElementById('openPdfButton');
+    
+    openPdfButton.addEventListener('click', function(event) {
+        if (openPdfButton.hasAttribute('disabled')) {
+            event.preventDefault(); // Evitar que se ejecute el evento de clic
+            alert('No se ha cargado ningún archivo PDF.');
+        }
+    });
+
+    // Deshabilitar el clic derecho en el botón para prevenir menú contextual
+    openPdfButton.addEventListener('contextmenu', function(event) {
+        event.preventDefault();
+    });
+});
+
+})();
+

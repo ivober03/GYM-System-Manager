@@ -24,7 +24,7 @@
               <div class="col">
                 <h5 class="card-title text-muted mb-0">Ingresos:</h5>
                 <span class="h2 font-weight-bold mb-0">$</span>
-                <span class="h2 font-weight-bold mb-0">350.897</span>
+                <span class="h2 font-weight-bold mb-0">{{ ingresos_mensuales.ingresos_mensuales_actual }}</span>
               </div>
               <div class="col-auto">
                 <div class="icon icon-shape bg-success text-white rounded-circle shadow">
@@ -33,7 +33,7 @@
               </div>
             </div>
             <p class="mt-3 mb-0 text-muted text-sm">
-              <span class="text-success mr-2"><i class="fa fa-arrow-up"></i> 3.48%</span>
+              <span class="text-success mr-2"><i class="fa fa-arrow-up"></i>{{ ingresos_mensuales.porcentaje_cambio }}%</span>
               <span class="text-nowrap">Desde el mes pasado</span>
             </p>
           </div>
