@@ -1,3 +1,4 @@
 venv
 manager.db
 static/uploads
+__pycache__
